@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification>
+	<name>Kotlyars Catalog Foundation</name>
+	<code>kotlyars_catalog_foundation</code>
+	<version>1.0.0</version>
+	<author>OpenAI Codex</author>
+	<link>https://kotlyars.com</link>
+
+	<file path="admin/model/catalog/product.php">
+		<operation>
+			<search><![CDATA[
+		$this->cache->delete('product');
+
+	}
+
+	public function editProduct($product_id, $data) {
+			]]></search>
+			<add position="replace"><![CDATA[
+		$this->cache->delete('product');
+
+		return $product_id;
+
+	}
+
+	public function editProduct($product_id, $data) {
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/controller/catalog/product.php">
+		<operation>
+			<search><![CDATA[
+			$this->model_catalog_product->addProduct($this->request->post);
+			]]></search>
+			<add position="replace"><![CDATA[
+			$product_id = $this->model_catalog_product->addProduct($this->request->post);
+
+			$this->load->model('extension/module/kotlyars_catalog_foundation');
+			$this->model_extension_module_kotlyars_catalog_foundation->saveProductFoundation($product_id, $this->request->post);
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+			$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
+			]]></search>
+			<add position="after"><![CDATA[
+
+			$this->load->model('extension/module/kotlyars_catalog_foundation');
+			$this->model_extension_module_kotlyars_catalog_foundation->saveProductFoundation((int)$this->request->get['product_id'], $this->request->post);
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+		$data['product_categories'] = array();
+
+		foreach ($categories as $category_id) {
+			$category_info = $this->model_catalog_category->getCategory($category_id);
+
+			if ($category_info) {
+				$data['product_categories'][] = array(
+					'category_id' => $category_info['category_id'],
+					'name'        => ($category_info['path']) ? $category_info['path'] . ' &gt; ' . $category_info['name'] : $category_info['name']
+				);
+			}
+		}
+			]]></search>
+			<add position="after"><![CDATA[
+
+		$this->load->language('extension/module/kotlyars_catalog_foundation');
+		$data['tab_kotlyars_catalog_foundation'] = $this->language->get('tab_kotlyars_catalog_foundation');
+		$data['kotlyars_catalog_foundation_tab'] = $this->load->controller('extension/module/kotlyars_catalog_foundation/productTab', array(
+			'product_id' => isset($this->request->get['product_id']) ? (int)$this->request->get['product_id'] : 0,
+			'post' => $this->request->post,
+			'product_category' => $categories,
+			'errors' => isset($this->error['kotlyars_catalog_foundation']) ? $this->error['kotlyars_catalog_foundation'] : array()
+		));
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+		if ($this->request->post['product_seo_url']) {
+			]]></search>
+			<add position="before"><![CDATA[
+		$this->load->model('extension/module/kotlyars_catalog_foundation');
+
+		$foundation_errors = $this->model_extension_module_kotlyars_catalog_foundation->validateProductFoundation($this->request->post);
+
+		if ($foundation_errors) {
+			$this->error['kotlyars_catalog_foundation'] = $foundation_errors;
+		}
+
+			]]></add>
+		</operation>
+	</file>
+
+	<file path="admin/view/template/catalog/product_form.twig">
+		<operation>
+			<search><![CDATA[
+            <li><a href="#tab-links" data-toggle="tab">{{ tab_links }}</a></li>
+            <li><a href="#tab-attribute" data-toggle="tab">{{ tab_attribute }}</a></li>
+			]]></search>
+			<add position="replace"><![CDATA[
+            <li><a href="#tab-links" data-toggle="tab">{{ tab_links }}</a></li>
+            <li><a href="#tab-kotlyars-catalog-foundation" data-toggle="tab">{{ tab_kotlyars_catalog_foundation }}</a></li>
+            <li><a href="#tab-attribute" data-toggle="tab">{{ tab_attribute }}</a></li>
+			]]></add>
+		</operation>
+		<operation>
+			<search><![CDATA[
+            <div class="tab-pane" id="tab-attribute">
+			]]></search>
+			<add position="before"><![CDATA[
+            {{ kotlyars_catalog_foundation_tab }}
+			]]></add>
+		</operation>
+	</file>
+</modification>

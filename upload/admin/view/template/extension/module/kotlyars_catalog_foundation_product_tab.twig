@@ -1,0 +1,138 @@
+<div class="tab-pane" id="tab-kotlyars-catalog-foundation">
+  {% if errors.product_type or errors.category_code or errors.category_alignment %}
+    <div class="alert alert-danger">
+      <i class="fa fa-exclamation-circle"></i>
+      {% if errors.product_type %}<div>{{ errors.product_type }}</div>{% endif %}
+      {% if errors.category_code %}<div>{{ errors.category_code }}</div>{% endif %}
+      {% if errors.category_alignment %}<div>{{ errors.category_alignment }}</div>{% endif %}
+    </div>
+  {% endif %}
+
+  <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_phase_boundary }}</div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="input-kotlyars-product-type"><span data-toggle="tooltip" title="{{ help_product_type }}">{{ entry_product_type }}</span></label>
+    <div class="col-sm-10">
+      <select name="kotlyars_catalog_foundation[product_type]" id="input-kotlyars-product-type" class="form-control">
+        {% for product_type in product_types %}
+          {% if product_type.code == foundation.product_type %}
+            <option value="{{ product_type.code }}" selected="selected">{{ product_type.label }}</option>
+          {% else %}
+            <option value="{{ product_type.code }}">{{ product_type.label }}</option>
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="input-kotlyars-category-code"><span data-toggle="tooltip" title="{{ help_category_code }}">{{ entry_category_code }}</span></label>
+    <div class="col-sm-10">
+      <select name="kotlyars_catalog_foundation[category_code]" id="input-kotlyars-category-code" class="form-control">
+        <option value="">{{ text_select }}</option>
+        {% for group_name, group_options in category_options %}
+          <optgroup label="{{ group_name }}">
+            {% for option in group_options %}
+              {% if option.code == foundation.category_code %}
+                <option value="{{ option.code }}" data-product-types="{{ option.supports_product_types|join(',') }}" selected="selected">{{ option.label }}</option>
+              {% else %}
+                <option value="{{ option.code }}" data-product-types="{{ option.supports_product_types|join(',') }}">{{ option.label }}</option>
+              {% endif %}
+            {% endfor %}
+          </optgroup>
+        {% endfor %}
+      </select>
+      {% if errors.category_code %}
+        <div class="text-danger">{{ errors.category_code }}</div>
+      {% endif %}
+      {% if errors.category_alignment %}
+        <div class="text-danger">{{ errors.category_alignment }}</div>
+      {% endif %}
+      <p class="help-block">{{ text_category_alignment }}</p>
+    </div>
+  </div>
+
+  <div class="well well-sm">
+    <strong>{{ text_selected_category }}:</strong>
+    {% if selected_category.label %}
+      {{ selected_category.label }}<br />
+      <strong>{{ text_supported_product_types }}:</strong> {{ selected_category.supports_product_types|join(', ') }}
+    {% else %}
+      {{ text_select }}
+    {% endif %}
+  </div>
+
+  <h4>{{ entry_governance_attributes }}</h4>
+
+  {% if attribute_rows %}
+    {% for attribute in attribute_rows %}
+      <div class="form-group kotlyars-attribute-row{% if not attribute.visible %} hidden{% endif %}" data-categories="{{ attribute.applicable_categories|join(',') }}">
+        <label class="col-sm-2 control-label" for="input-kotlyars-{{ attribute.code }}">
+          {{ attribute.label }}{% if attribute.required %} *{% endif %}
+        </label>
+        <div class="col-sm-10">
+          {% if attribute.storage == 'core' %}
+            <p class="form-control-static">{{ text_native_field }}: {{ attribute.core_label }}</p>
+          {% elseif attribute.input_type == 'select' %}
+            <select name="kotlyars_catalog_foundation[attributes][{{ attribute.code }}]" id="input-kotlyars-{{ attribute.code }}" class="form-control">
+              <option value="">{{ text_select }}</option>
+              {% for option_value, option_label in attribute.options %}
+                {% if option_value == attribute.value %}
+                  <option value="{{ option_value }}" selected="selected">{{ option_label }}</option>
+                {% else %}
+                  <option value="{{ option_value }}">{{ option_label }}</option>
+                {% endif %}
+              {% endfor %}
+            </select>
+          {% else %}
+            <input type="text" name="kotlyars_catalog_foundation[attributes][{{ attribute.code }}]" value="{{ attribute.value }}" id="input-kotlyars-{{ attribute.code }}" class="form-control" />
+          {% endif %}
+
+          {% if attribute.error %}
+            <div class="text-danger">{{ attribute.error }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  {% if selected_category.code == 'jewellery.general' %}
+    <div class="alert alert-warning"><i class="fa fa-info-circle"></i> {{ text_no_attributes }}</div>
+  {% endif %}
+
+  <h4>{{ text_filter_preview }}</h4>
+
+  {% if filter_preview %}
+    <ul>
+      {% for filter in filter_preview %}
+        <li>{{ filter.label }} ({{ filter.filter_type }})</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{{ text_no_filters }}</p>
+  {% endif %}
+
+  <div class="well well-sm">
+    <strong>Phase 2 handoff:</strong> {{ text_auction_placeholders }}
+  </div>
+</div>
+
+<script type="text/javascript">
+(function() {
+  function toggleRows() {
+    var category = $('#input-kotlyars-category-code').val();
+
+    $('.kotlyars-attribute-row').each(function() {
+      var categories = ($(this).attr('data-categories') || '').split(',');
+      if (!category || $.inArray(category, categories) === -1) {
+        $(this).addClass('hidden');
+      } else {
+        $(this).removeClass('hidden');
+      }
+    });
+  }
+
+  $('#input-kotlyars-category-code').on('change', toggleRows);
+  toggleRows();
+})();
+</script>
