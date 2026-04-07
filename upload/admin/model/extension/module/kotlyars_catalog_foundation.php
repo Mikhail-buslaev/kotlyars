@@ -1,5 +1,7 @@
 <?php
 class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
+	const MODIFICATION_CODE = 'kotlyars_catalog_foundation';
+
 	protected function getRegistry() {
 		$this->load->config('kotlyars_catalog');
 
@@ -56,6 +58,8 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 		$this->model_setting_event->addEvent('kotlyars_catalog_foundation_admin_delete_product', 'admin/model/catalog/product/deleteProduct/before', 'extension/module/kotlyars_catalog_foundation_event/deleteProductBefore');
 		$this->model_setting_event->addEvent('kotlyars_catalog_foundation_catalog_get_product', 'catalog/model/catalog/product/getProduct/after', 'extension/module/kotlyars_catalog_foundation_event/getProductAfter');
 		$this->model_setting_event->addEvent('kotlyars_catalog_foundation_catalog_get_products', 'catalog/model/catalog/product/getProducts/after', 'extension/module/kotlyars_catalog_foundation_event/getProductsAfter');
+
+		$this->installModification();
 	}
 
 	public function uninstall() {
@@ -68,6 +72,64 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "kotlyars_catalog_product_value`");
 		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "kotlyars_catalog_category_map`");
 		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "kotlyars_catalog_product`");
+
+		$this->uninstallModification();
+	}
+
+	public function installModification() {
+		$xml = $this->getModificationXml();
+
+		if ($xml === '') {
+			throw new Exception('Kotlyars catalog OCMOD XML could not be loaded.');
+		}
+
+		$this->load->model('setting/modification');
+
+		$dom = new DOMDocument('1.0', 'UTF-8');
+		$dom->loadXml($xml);
+
+		$name = $dom->getElementsByTagName('name')->item(0);
+		$code = $dom->getElementsByTagName('code')->item(0);
+		$author = $dom->getElementsByTagName('author')->item(0);
+		$version = $dom->getElementsByTagName('version')->item(0);
+		$link = $dom->getElementsByTagName('link')->item(0);
+
+		if (!$code || !$code->nodeValue) {
+			throw new Exception('Kotlyars catalog OCMOD code is missing.');
+		}
+
+		$modification_info = $this->model_setting_modification->getModificationByCode($code->nodeValue);
+
+		if ($modification_info) {
+			$this->model_setting_modification->deleteModification($modification_info['modification_id']);
+		}
+
+		$this->model_setting_modification->addModification(array(
+			'extension_install_id' => 0,
+			'name'                 => $name ? $name->nodeValue : 'Kotlyars Catalog Foundation',
+			'code'                 => $code->nodeValue,
+			'author'               => $author ? $author->nodeValue : '',
+			'version'              => $version ? $version->nodeValue : '',
+			'link'                 => $link ? $link->nodeValue : '',
+			'xml'                  => $xml,
+			'status'               => 1
+		));
+	}
+
+	public function uninstallModification() {
+		$this->load->model('setting/modification');
+
+		$modification_info = $this->model_setting_modification->getModificationByCode(self::MODIFICATION_CODE);
+
+		if ($modification_info) {
+			$this->model_setting_modification->deleteModification($modification_info['modification_id']);
+		}
+	}
+
+	public function getModificationStatus() {
+		$this->load->model('setting/modification');
+
+		return $this->model_setting_modification->getModificationByCode(self::MODIFICATION_CODE);
 	}
 
 	public function getOverview() {
@@ -346,5 +408,15 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 		}
 
 		return $categories;
+	}
+
+	protected function getModificationXml() {
+		$file = DIR_SYSTEM . 'config/kotlyars_catalog_foundation.ocmod.xml';
+
+		if (!is_file($file)) {
+			return '';
+		}
+
+		return file_get_contents($file);
 	}
 }

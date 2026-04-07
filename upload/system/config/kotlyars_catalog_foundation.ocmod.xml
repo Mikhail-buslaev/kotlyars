@@ -6,29 +6,11 @@
 	<author>OpenAI Codex</author>
 	<link>https://kotlyars.com</link>
 
-	<file path="admin/model/catalog/product.php">
-		<operation>
-			<search><![CDATA[
-		$this->cache->delete('product');
-
-	}
-
-	public function editProduct($product_id, $data) {
-			]]></search>
-			<add position="replace"><![CDATA[
-		$this->cache->delete('product');
-
-		return $product_id;
-
-	}
-
-	public function editProduct($product_id, $data) {
-			]]></add>
-		</operation>
-	</file>
-
 	<file path="admin/controller/catalog/product.php">
 		<operation>
+			<ignoreif><![CDATA[
+			$this->model_extension_module_kotlyars_catalog_foundation->saveProductFoundation($product_id, $this->request->post);
+			]]></ignoreif>
 			<search><![CDATA[
 			$this->model_catalog_product->addProduct($this->request->post);
 			]]></search>
@@ -40,6 +22,9 @@
 			]]></add>
 		</operation>
 		<operation>
+			<ignoreif><![CDATA[
+			$this->model_extension_module_kotlyars_catalog_foundation->saveProductFoundation((int)$this->request->get['product_id'], $this->request->post);
+			]]></ignoreif>
 			<search><![CDATA[
 			$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
 			]]></search>
@@ -50,21 +35,13 @@
 			]]></add>
 		</operation>
 		<operation>
+			<ignoreif><![CDATA[
+		$data['kotlyars_catalog_foundation_tab'] = $this->load->controller('extension/module/kotlyars_catalog_foundation/productTab', array(
+			]]></ignoreif>
 			<search><![CDATA[
-		$data['product_categories'] = array();
-
-		foreach ($categories as $category_id) {
-			$category_info = $this->model_catalog_category->getCategory($category_id);
-
-			if ($category_info) {
-				$data['product_categories'][] = array(
-					'category_id' => $category_info['category_id'],
-					'name'        => ($category_info['path']) ? $category_info['path'] . ' &gt; ' . $category_info['name'] : $category_info['name']
-				);
-			}
-		}
+		// Filters
 			]]></search>
-			<add position="after"><![CDATA[
+			<add position="before"><![CDATA[
 
 		$this->load->language('extension/module/kotlyars_catalog_foundation');
 		$data['tab_kotlyars_catalog_foundation'] = $this->language->get('tab_kotlyars_catalog_foundation');
@@ -77,6 +54,9 @@
 			]]></add>
 		</operation>
 		<operation>
+			<ignoreif><![CDATA[
+		$foundation_errors = $this->model_extension_module_kotlyars_catalog_foundation->validateProductFoundation($this->request->post);
+			]]></ignoreif>
 			<search><![CDATA[
 		if ($this->request->post['product_seo_url']) {
 			]]></search>
@@ -95,17 +75,21 @@
 
 	<file path="admin/view/template/catalog/product_form.twig">
 		<operation>
+			<ignoreif><![CDATA[
+            <li><a href="#tab-kotlyars-catalog-foundation" data-toggle="tab">{{ tab_kotlyars_catalog_foundation }}</a></li>
+			]]></ignoreif>
 			<search><![CDATA[
             <li><a href="#tab-links" data-toggle="tab">{{ tab_links }}</a></li>
-            <li><a href="#tab-attribute" data-toggle="tab">{{ tab_attribute }}</a></li>
 			]]></search>
-			<add position="replace"><![CDATA[
+			<add position="after"><![CDATA[
             <li><a href="#tab-links" data-toggle="tab">{{ tab_links }}</a></li>
             <li><a href="#tab-kotlyars-catalog-foundation" data-toggle="tab">{{ tab_kotlyars_catalog_foundation }}</a></li>
-            <li><a href="#tab-attribute" data-toggle="tab">{{ tab_attribute }}</a></li>
 			]]></add>
 		</operation>
 		<operation>
+			<ignoreif><![CDATA[
+            {{ kotlyars_catalog_foundation_tab }}
+			]]></ignoreif>
 			<search><![CDATA[
             <div class="tab-pane" id="tab-attribute">
 			]]></search>

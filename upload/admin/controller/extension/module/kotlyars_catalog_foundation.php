@@ -17,7 +17,23 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 			$this->response->redirect($this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true));
 		}
 
-		$data['error_warning'] = isset($this->error['warning']) ? $this->error['warning'] : '';
+		if (isset($this->error['warning'])) {
+			$data['error_warning'] = $this->error['warning'];
+		} elseif (isset($this->session->data['error_warning'])) {
+			$data['error_warning'] = $this->session->data['error_warning'];
+
+			unset($this->session->data['error_warning']);
+		} else {
+			$data['error_warning'] = '';
+		}
+
+		if (isset($this->session->data['success'])) {
+			$data['success'] = $this->session->data['success'];
+
+			unset($this->session->data['success']);
+		} else {
+			$data['success'] = '';
+		}
 
 		$data['breadcrumbs'] = array(
 			array(
@@ -36,8 +52,20 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 
 		$data['action'] = $this->url->link('extension/module/kotlyars_catalog_foundation', 'user_token=' . $this->session->data['user_token'], true);
 		$data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);
+		$data['register_modification'] = $this->url->link('extension/module/kotlyars_catalog_foundation/registerModification', 'user_token=' . $this->session->data['user_token'], true);
+		$data['refresh_modifications'] = $this->url->link('marketplace/modification/refresh', 'user_token=' . $this->session->data['user_token'], true);
 		$data['module_kotlyars_catalog_foundation_status'] = isset($this->request->post['module_kotlyars_catalog_foundation_status']) ? $this->request->post['module_kotlyars_catalog_foundation_status'] : $this->config->get('module_kotlyars_catalog_foundation_status');
 		$data['overview'] = $this->model_extension_module_kotlyars_catalog_foundation->getOverview();
+		$data['modification_info'] = $this->model_extension_module_kotlyars_catalog_foundation->getModificationStatus();
+		$data['entry_status'] = $this->language->get('entry_status');
+		$data['text_enabled'] = $this->language->get('text_enabled');
+		$data['text_disabled'] = $this->language->get('text_disabled');
+		$data['text_modification_status_registered'] = $this->language->get('text_modification_status_registered');
+		$data['text_modification_status_missing'] = $this->language->get('text_modification_status_missing');
+		$data['button_save'] = $this->language->get('button_save');
+		$data['button_cancel'] = $this->language->get('button_cancel');
+		$data['button_register_modification'] = $this->language->get('button_register_modification');
+		$data['button_refresh_modifications'] = $this->language->get('button_refresh_modifications');
 
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
@@ -59,6 +87,28 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 	public function uninstall() {
 		$this->load->model('extension/module/kotlyars_catalog_foundation');
 		$this->model_extension_module_kotlyars_catalog_foundation->uninstall();
+	}
+
+	public function registerModification() {
+		$this->load->language('extension/module/kotlyars_catalog_foundation');
+
+		if (!$this->user->hasPermission('modify', 'extension/module/kotlyars_catalog_foundation')) {
+			$this->session->data['error_warning'] = $this->language->get('error_permission');
+			$this->response->redirect($this->url->link('extension/module/kotlyars_catalog_foundation', 'user_token=' . $this->session->data['user_token'], true));
+
+			return;
+		}
+
+		$this->load->model('extension/module/kotlyars_catalog_foundation');
+
+		try {
+			$this->model_extension_module_kotlyars_catalog_foundation->installModification();
+			$this->session->data['success'] = $this->language->get('text_modification_registered');
+		} catch (Exception $exception) {
+			$this->session->data['error_warning'] = sprintf($this->language->get('error_modification_register'), $exception->getMessage());
+		}
+
+		$this->response->redirect($this->url->link('extension/module/kotlyars_catalog_foundation', 'user_token=' . $this->session->data['user_token'], true));
 	}
 
 	public function productTab($setting = array()) {
