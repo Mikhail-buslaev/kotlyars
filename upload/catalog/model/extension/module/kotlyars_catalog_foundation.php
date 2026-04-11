@@ -4,47 +4,40 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 		$this->load->config('kotlyars_catalog');
 
 		return array(
-			'product_types'        => (array)$this->config->get('kotlyars_catalog_product_types'),
-			'categories'           => (array)$this->config->get('kotlyars_catalog_category_registry'),
-			'attribute_definitions'=> (array)$this->config->get('kotlyars_catalog_attribute_definitions'),
-			'category_filters'     => (array)$this->config->get('kotlyars_catalog_category_filter_map'),
-			'filter_definitions'   => (array)$this->config->get('kotlyars_catalog_filter_definitions'),
-			'auction_placeholders' => (array)$this->config->get('kotlyars_catalog_auction_placeholders')
+			'leaves'          => (array)$this->config->get('kotlyars_catalog_leaf_registry'),
+			'attributes'      => (array)$this->config->get('kotlyars_catalog_attribute_definitions'),
+			'ranges'          => (array)$this->config->get('kotlyars_catalog_range_definitions'),
+			'leaf_attributes' => (array)$this->config->get('kotlyars_catalog_leaf_attribute_map'),
+			'leaf_ranges'     => (array)$this->config->get('kotlyars_catalog_leaf_range_map')
 		);
 	}
 
 	public function getProductFoundation($product_id) {
 		$query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "kotlyars_catalog_product` WHERE `product_id` = '" . (int)$product_id . "'");
 
-		if (!$query->num_rows) {
-			return array(
-				'product_type'  => 'fixed_price',
-				'category_code' => '',
-				'attributes'    => array()
-			);
-		}
-
-		$value_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "kotlyars_catalog_product_value` WHERE `product_id` = '" . (int)$product_id . "'");
-
-		$attributes = array();
-
-		foreach ($value_query->rows as $row) {
-			if ($row['value_key'] !== null && $row['value_key'] !== '') {
-				$attributes[$row['attribute_code']] = $row['value_key'];
-			} elseif ($row['value_decimal'] !== null) {
-				$attributes[$row['attribute_code']] = (float)$row['value_decimal'];
-			} elseif ($row['value_int'] !== null) {
-				$attributes[$row['attribute_code']] = (int)$row['value_int'];
-			} else {
-				$attributes[$row['attribute_code']] = $row['value_text'];
-			}
-		}
-
-		return array(
-			'product_type'  => $query->row['product_type'],
-			'category_code' => $query->row['category_code'],
-			'attributes'    => $attributes
+		$foundation = array(
+			'leaf_code'  => '',
+			'attributes' => array(),
+			'ranges'     => array()
 		);
+
+		if ($query->num_rows) {
+			$foundation['leaf_code'] = $query->row['leaf_code'];
+		}
+
+		$enum_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "kotlyars_catalog_product_enum` WHERE `product_id` = '" . (int)$product_id . "'");
+
+		foreach ($enum_query->rows as $row) {
+			$foundation['attributes'][$row['attribute_code']] = $row['value_key'];
+		}
+
+		$range_query = $this->db->query("SELECT * FROM `" . DB_PREFIX . "kotlyars_catalog_product_range` WHERE `product_id` = '" . (int)$product_id . "'");
+
+		foreach ($range_query->rows as $row) {
+			$foundation['ranges'][$row['range_code']] = (float)$row['value_decimal'];
+		}
+
+		return $foundation;
 	}
 
 	public function augmentProductInfo(array $product_info) {
@@ -54,56 +47,77 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 
 		$registry = $this->getRegistry();
 		$foundation = $this->getProductFoundation($product_info['product_id']);
-		$category = isset($registry['categories'][$foundation['category_code']]) ? $registry['categories'][$foundation['category_code']] : array();
-		$product_type = isset($registry['product_types'][$foundation['product_type']]) ? $registry['product_types'][$foundation['product_type']] : $registry['product_types']['fixed_price'];
+		$leaf = isset($registry['leaves'][$foundation['leaf_code']]) ? $registry['leaves'][$foundation['leaf_code']] : array();
 
-		$product_info['product_type'] = $product_type['code'];
-		$product_info['governance_category_code'] = $foundation['category_code'];
-		$product_info['governance_category_label'] = isset($category['label']) ? $category['label'] : '';
-		$product_info['can_add_to_cart'] = (int)$product_type['cart_available'];
-		$product_info['can_checkout'] = (int)$product_type['checkout_available'];
+		$product_info['governance_leaf_code'] = $foundation['leaf_code'];
+		$product_info['governance_leaf_label'] = isset($leaf['label']) ? $leaf['label'] : '';
 		$product_info['catalog_contract'] = array(
-			'product_type'        => $product_type['code'],
-			'category_code'       => $foundation['category_code'],
-			'category_label'      => isset($category['label']) ? $category['label'] : '',
-			'filter_index'        => $this->buildFilterIndex($product_info, $foundation, $registry),
-			'future_auction_data' => $registry['auction_placeholders']
+			'leaf_code'         => $foundation['leaf_code'],
+			'leaf_path'         => isset($leaf['path']) ? $leaf['path'] : array(),
+			'filterable_values' => $this->buildFilterableValues($product_info, $foundation, $registry),
+			'range_values'      => $this->buildRangeValues($product_info, $foundation, $registry)
 		);
 
 		return $product_info;
 	}
 
-	protected function buildFilterIndex(array $product_info, array $foundation, array $registry) {
-		$filter_codes = isset($registry['category_filters'][$foundation['category_code']]) ? $registry['category_filters'][$foundation['category_code']] : array();
-		$filter_index = array();
+	protected function buildFilterableValues(array $product_info, array $foundation, array $registry) {
+		$values = array();
 
-		foreach ($filter_codes as $filter_code) {
-			if (!isset($registry['filter_definitions'][$filter_code])) {
+		if (empty($registry['leaf_attributes'][$foundation['leaf_code']])) {
+			return $values;
+		}
+
+		foreach ($registry['leaf_attributes'][$foundation['leaf_code']] as $rule) {
+			$attribute_code = $rule['code'];
+			$value_key = isset($foundation['attributes'][$attribute_code]) ? $foundation['attributes'][$attribute_code] : null;
+
+			if ($value_key === null || !isset($rule['options'][$value_key])) {
+				$values[$attribute_code] = null;
 				continue;
 			}
 
-			$definition = $registry['filter_definitions'][$filter_code];
+			$values[$attribute_code] = array(
+				'key' => $value_key,
+				'label' => $rule['options'][$value_key]
+			);
+		}
 
-			if ($definition['source'] === 'product_type') {
-				$filter_index[$filter_code] = $foundation['product_type'];
-				continue;
-			}
+		return $values;
+	}
 
-			if ($definition['attribute_code'] === 'price') {
-				$filter_index[$filter_code] = isset($product_info['price']) ? $product_info['price'] : null;
-			} elseif ($definition['attribute_code'] === 'brand') {
-				$filter_index[$filter_code] = isset($product_info['manufacturer']) ? $product_info['manufacturer'] : null;
-			} elseif ($definition['attribute_code'] === 'weight') {
-				$filter_index[$filter_code] = isset($product_info['weight']) ? $product_info['weight'] : null;
-			} elseif ($definition['attribute_code'] === 'quantity') {
-				$filter_index[$filter_code] = isset($product_info['quantity']) ? $product_info['quantity'] : null;
-			} elseif ($definition['attribute_code'] === 'location') {
-				$filter_index[$filter_code] = isset($product_info['location']) ? $product_info['location'] : null;
+	protected function buildRangeValues(array $product_info, array $foundation, array $registry) {
+		$values = array();
+
+		if (empty($registry['leaf_ranges'][$foundation['leaf_code']])) {
+			return $values;
+		}
+
+		foreach ($registry['leaf_ranges'][$foundation['leaf_code']] as $rule) {
+			$range_code = $rule['code'];
+			$definition = $registry['ranges'][$range_code];
+
+			if ($definition['storage'] === 'core') {
+				$current_value = isset($product_info[$definition['core_field']]) ? $product_info[$definition['core_field']] : null;
 			} else {
-				$filter_index[$filter_code] = isset($foundation['attributes'][$definition['attribute_code']]) ? $foundation['attributes'][$definition['attribute_code']] : null;
+				$current_value = isset($foundation['ranges'][$range_code]) ? $foundation['ranges'][$range_code] : null;
+			}
+
+			$values[$range_code] = array(
+				'value' => $current_value,
+				'min'   => $rule['min'],
+				'max'   => $rule['max']
+			);
+
+			if (isset($rule['unit'])) {
+				$values[$range_code]['unit'] = $rule['unit'];
+			}
+
+			if (isset($rule['currency'])) {
+				$values[$range_code]['currency'] = $rule['currency'];
 			}
 		}
 
-		return $filter_index;
+		return $values;
 	}
 }

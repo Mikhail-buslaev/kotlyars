@@ -1,0 +1,193 @@
+<div class="tab-pane" id="tab-kotlyars-catalog-foundation">
+  {% if errors.leaf_code or errors.category_alignment %}
+    <div class="alert alert-danger">
+      <i class="fa fa-exclamation-circle"></i>
+      {% if errors.leaf_code %}<div>{{ errors.leaf_code }}</div>{% endif %}
+      {% if errors.category_alignment %}<div>{{ errors.category_alignment }}</div>{% endif %}
+    </div>
+  {% endif %}
+
+  <div class="alert alert-info"><i class="fa fa-info-circle"></i> {{ text_governance_scope }}</div>
+
+  <div class="form-group">
+    <label class="col-sm-2 control-label" for="input-kotlyars-leaf-code"><span data-toggle="tooltip" title="{{ help_leaf_code }}">{{ entry_leaf_code }}</span></label>
+    <div class="col-sm-10">
+      <select name="kotlyars_catalog_foundation[leaf_code]" id="input-kotlyars-leaf-code" class="form-control">
+        <option value="">{{ text_select }}</option>
+        {% for group_name, group_options in leaf_options %}
+          <optgroup label="{{ group_name }}">
+            {% for option in group_options %}
+              {% if option.code == foundation.leaf_code %}
+                <option value="{{ option.code }}" selected="selected">{{ option.path_label }}</option>
+              {% else %}
+                <option value="{{ option.code }}">{{ option.path_label }}</option>
+              {% endif %}
+            {% endfor %}
+          </optgroup>
+        {% endfor %}
+      </select>
+      {% if errors.leaf_code %}
+        <div class="text-danger">{{ errors.leaf_code }}</div>
+      {% endif %}
+      <p class="help-block">{{ text_category_alignment }}</p>
+    </div>
+  </div>
+
+  <div class="well well-sm">
+    <strong>{{ text_selected_leaf }}:</strong>
+    {% if selected_leaf.label %}
+      {{ selected_leaf.path|join(' > ') }}
+    {% else %}
+      {{ text_select }}
+    {% endif %}
+    {% if alignment_notice %}
+      <br />
+      <strong>Category alignment:</strong> {{ alignment_notice }}
+    {% endif %}
+  </div>
+
+  <h4>{{ entry_governance_attributes }}</h4>
+
+  {% if attribute_rows %}
+    {% for attribute in attribute_rows %}
+      <div class="form-group kotlyars-enum-row{% if not attribute.visible %} hidden{% endif %}" data-leaves="{{ attribute.applicable }}" data-options="{{ attribute.options_json|e('html_attr') }}">
+        <label class="col-sm-2 control-label" for="input-kotlyars-attribute-{{ attribute.code }}">{{ attribute.label }}</label>
+        <div class="col-sm-10">
+          <select name="kotlyars_catalog_foundation[attributes][{{ attribute.code }}]" id="input-kotlyars-attribute-{{ attribute.code }}" class="form-control" data-current-value="{{ attribute.value|e('html_attr') }}">
+            <option value="">{{ text_select }}</option>
+          </select>
+          {% if attribute.error %}
+            <div class="text-danger">{{ attribute.error }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>{{ text_no_attributes }}</p>
+  {% endif %}
+
+  <h4>{{ entry_governance_ranges }}</h4>
+
+  {% if range_rows %}
+    {% for range in range_rows %}
+      <div class="form-group kotlyars-range-row{% if not range.visible %} hidden{% endif %}" data-leaves="{{ range.applicable }}" data-rules="{{ range.rules_json|e('html_attr') }}">
+        <label class="col-sm-2 control-label" for="input-kotlyars-range-{{ range.code }}">{{ range.label }}</label>
+        <div class="col-sm-10">
+          {% if range.storage == 'core' %}
+            <p class="form-control-static">{{ text_native_field }}: {{ range.core_label }}{% if range.value != '' %} ({{ range.value }}){% endif %}</p>
+          {% else %}
+            <input type="text" name="kotlyars_catalog_foundation[ranges][{{ range.code }}]" value="{{ range.value }}" id="input-kotlyars-range-{{ range.code }}" class="form-control" />
+          {% endif %}
+
+          <p class="help-block kotlyars-range-meta">
+            {% if range.selected_rule.currency %}
+              {{ range.selected_rule.min }} - {{ range.selected_rule.max }} {{ range.selected_rule.currency }}
+            {% elseif range.selected_rule.unit %}
+              {{ range.selected_rule.min }} - {{ range.selected_rule.max }} {{ range.selected_rule.unit }}
+            {% endif %}
+          </p>
+
+          {% if range.error %}
+            <div class="text-danger">{{ range.error }}</div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <p>{{ text_no_ranges }}</p>
+  {% endif %}
+
+  <h4>{{ text_filter_preview }}</h4>
+
+  {% if filter_preview.attributes or filter_preview.ranges %}
+    <ul>
+      {% for attribute_label in filter_preview.attributes %}
+        <li>{{ attribute_label }} (select)</li>
+      {% endfor %}
+      {% for range_label in filter_preview.ranges %}
+        <li>{{ range_label }} (range)</li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{{ text_no_filters }}</p>
+  {% endif %}
+</div>
+
+<script type="text/javascript">
+(function() {
+  function renderEnumRows(leafCode) {
+    $('.kotlyars-enum-row').each(function() {
+      var row = $(this);
+      var leaves = (row.attr('data-leaves') || '').split(',');
+      var select = row.find('select');
+      var optionsMap = {};
+      var currentValue = select.val() || select.attr('data-current-value') || '';
+
+      try {
+        optionsMap = JSON.parse(row.attr('data-options') || '{}');
+      } catch (error) {
+        optionsMap = {};
+      }
+
+      if (!leafCode || $.inArray(leafCode, leaves) === -1) {
+        row.addClass('hidden');
+        select.html('<option value="">{{ text_select|e('js') }}</option>');
+        return;
+      }
+
+      row.removeClass('hidden');
+      select.html('<option value="">{{ text_select|e('js') }}</option>');
+
+      $.each(optionsMap[leafCode] || [], function(index, option) {
+        var selected = option.value === currentValue ? ' selected="selected"' : '';
+        select.append('<option value="' + option.value + '"' + selected + '>' + option.label + '</option>');
+      });
+
+      if (!select.find('option:selected').length) {
+        select.val('');
+      }
+    });
+  }
+
+  function renderRangeRows(leafCode) {
+    $('.kotlyars-range-row').each(function() {
+      var row = $(this);
+      var leaves = (row.attr('data-leaves') || '').split(',');
+      var meta = row.find('.kotlyars-range-meta');
+      var rulesMap = {};
+
+      try {
+        rulesMap = JSON.parse(row.attr('data-rules') || '{}');
+      } catch (error) {
+        rulesMap = {};
+      }
+
+      if (!leafCode || $.inArray(leafCode, leaves) === -1) {
+        row.addClass('hidden');
+        meta.text('');
+        return;
+      }
+
+      row.removeClass('hidden');
+
+      if (rulesMap[leafCode]) {
+        if (rulesMap[leafCode].currency) {
+          meta.text(rulesMap[leafCode].min + ' - ' + rulesMap[leafCode].max + ' ' + rulesMap[leafCode].currency);
+        } else if (rulesMap[leafCode].unit) {
+          meta.text(rulesMap[leafCode].min + ' - ' + rulesMap[leafCode].max + ' ' + rulesMap[leafCode].unit);
+        }
+      }
+    });
+  }
+
+  function syncFoundationRows() {
+    var leafCode = $('#input-kotlyars-leaf-code').val();
+
+    renderEnumRows(leafCode);
+    renderRangeRows(leafCode);
+  }
+
+  $('#input-kotlyars-leaf-code').on('change', syncFoundationRows);
+  syncFoundationRows();
+})();
+</script>

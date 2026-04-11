@@ -6,6 +6,7 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 		$this->load->language('extension/module/kotlyars_catalog_foundation');
 		$this->load->model('setting/setting');
 		$this->load->model('extension/module/kotlyars_catalog_foundation');
+		$this->model_extension_module_kotlyars_catalog_foundation->ensureSchemaUpgrades();
 
 		$this->document->setTitle($this->language->get('heading_title'));
 
@@ -53,6 +54,7 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 		$data['action'] = $this->url->link('extension/module/kotlyars_catalog_foundation', 'user_token=' . $this->session->data['user_token'], true);
 		$data['cancel'] = $this->url->link('marketplace/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);
 		$data['register_modification'] = $this->url->link('extension/module/kotlyars_catalog_foundation/registerModification', 'user_token=' . $this->session->data['user_token'], true);
+		$data['bootstrap_native_catalog'] = $this->url->link('extension/module/kotlyars_catalog_foundation/bootstrapNativeCatalog', 'user_token=' . $this->session->data['user_token'], true);
 		$data['refresh_modifications'] = $this->url->link('marketplace/modification/refresh', 'user_token=' . $this->session->data['user_token'], true);
 		$data['module_kotlyars_catalog_foundation_status'] = isset($this->request->post['module_kotlyars_catalog_foundation_status']) ? $this->request->post['module_kotlyars_catalog_foundation_status'] : $this->config->get('module_kotlyars_catalog_foundation_status');
 		$data['overview'] = $this->model_extension_module_kotlyars_catalog_foundation->getOverview();
@@ -65,6 +67,7 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 		$data['button_save'] = $this->language->get('button_save');
 		$data['button_cancel'] = $this->language->get('button_cancel');
 		$data['button_register_modification'] = $this->language->get('button_register_modification');
+		$data['button_bootstrap_native_catalog'] = $this->language->get('button_bootstrap_native_catalog');
 		$data['button_refresh_modifications'] = $this->language->get('button_refresh_modifications');
 
 		$data['header'] = $this->load->controller('common/header');
@@ -111,6 +114,28 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 		$this->response->redirect($this->url->link('extension/module/kotlyars_catalog_foundation', 'user_token=' . $this->session->data['user_token'], true));
 	}
 
+	public function bootstrapNativeCatalog() {
+		$this->load->language('extension/module/kotlyars_catalog_foundation');
+
+		if (!$this->user->hasPermission('modify', 'extension/module/kotlyars_catalog_foundation')) {
+			$this->session->data['error_warning'] = $this->language->get('error_permission');
+			$this->response->redirect($this->url->link('extension/module/kotlyars_catalog_foundation', 'user_token=' . $this->session->data['user_token'], true));
+
+			return;
+		}
+
+		$this->load->model('extension/module/kotlyars_catalog_foundation');
+
+		try {
+			$this->model_extension_module_kotlyars_catalog_foundation->bootstrapNativeCatalog();
+			$this->session->data['success'] = $this->language->get('text_native_bootstrap_success');
+		} catch (Exception $exception) {
+			$this->session->data['error_warning'] = sprintf($this->language->get('error_native_bootstrap'), $exception->getMessage());
+		}
+
+		$this->response->redirect($this->url->link('extension/module/kotlyars_catalog_foundation', 'user_token=' . $this->session->data['user_token'], true));
+	}
+
 	public function productTab($setting = array()) {
 		$this->load->language('extension/module/kotlyars_catalog_foundation');
 		$this->load->model('extension/module/kotlyars_catalog_foundation');
@@ -123,21 +148,19 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 		);
 
 		$data['heading_panel'] = $this->language->get('heading_panel');
-		$data['entry_product_type'] = $this->language->get('entry_product_type');
-		$data['entry_category_code'] = $this->language->get('entry_category_code');
+		$data['entry_leaf_code'] = $this->language->get('entry_leaf_code');
 		$data['entry_governance_attributes'] = $this->language->get('entry_governance_attributes');
+		$data['entry_governance_ranges'] = $this->language->get('entry_governance_ranges');
 		$data['text_select'] = $this->language->get('text_select');
 		$data['text_filter_preview'] = $this->language->get('text_filter_preview');
 		$data['text_no_filters'] = $this->language->get('text_no_filters');
-		$data['text_phase_boundary'] = $this->language->get('text_phase_boundary');
-		$data['text_auction_placeholders'] = $this->language->get('text_auction_placeholders');
+		$data['text_governance_scope'] = $this->language->get('text_governance_scope');
 		$data['text_native_field'] = $this->language->get('text_native_field');
-		$data['text_supported_product_types'] = $this->language->get('text_supported_product_types');
-		$data['text_selected_category'] = $this->language->get('text_selected_category');
+		$data['text_selected_leaf'] = $this->language->get('text_selected_leaf');
 		$data['text_no_attributes'] = $this->language->get('text_no_attributes');
+		$data['text_no_ranges'] = $this->language->get('text_no_ranges');
 		$data['text_category_alignment'] = $this->language->get('text_category_alignment');
-		$data['help_product_type'] = $this->language->get('help_product_type');
-		$data['help_category_code'] = $this->language->get('help_category_code');
+		$data['help_leaf_code'] = $this->language->get('help_leaf_code');
 
 		return $this->load->view('extension/module/kotlyars_catalog_foundation_product_tab', $data);
 	}

@@ -9,33 +9,6 @@
 	<file path="admin/controller/catalog/product.php">
 		<operation>
 			<ignoreif><![CDATA[
-			$this->model_extension_module_kotlyars_catalog_foundation->saveProductFoundation($product_id, $this->request->post);
-			]]></ignoreif>
-			<search><![CDATA[
-			$this->model_catalog_product->addProduct($this->request->post);
-			]]></search>
-			<add position="replace"><![CDATA[
-			$product_id = $this->model_catalog_product->addProduct($this->request->post);
-
-			$this->load->model('extension/module/kotlyars_catalog_foundation');
-			$this->model_extension_module_kotlyars_catalog_foundation->saveProductFoundation($product_id, $this->request->post);
-			]]></add>
-		</operation>
-		<operation>
-			<ignoreif><![CDATA[
-			$this->model_extension_module_kotlyars_catalog_foundation->saveProductFoundation((int)$this->request->get['product_id'], $this->request->post);
-			]]></ignoreif>
-			<search><![CDATA[
-			$this->model_catalog_product->editProduct($this->request->get['product_id'], $this->request->post);
-			]]></search>
-			<add position="after"><![CDATA[
-
-			$this->load->model('extension/module/kotlyars_catalog_foundation');
-			$this->model_extension_module_kotlyars_catalog_foundation->saveProductFoundation((int)$this->request->get['product_id'], $this->request->post);
-			]]></add>
-		</operation>
-		<operation>
-			<ignoreif><![CDATA[
 		$data['kotlyars_catalog_foundation_tab'] = $this->load->controller('extension/module/kotlyars_catalog_foundation/productTab', array(
 			]]></ignoreif>
 			<search><![CDATA[
@@ -79,10 +52,9 @@
             <li><a href="#tab-kotlyars-catalog-foundation" data-toggle="tab">{{ tab_kotlyars_catalog_foundation }}</a></li>
 			]]></ignoreif>
 			<search><![CDATA[
-            <li><a href="#tab-links" data-toggle="tab">{{ tab_links }}</a></li>
+            <li><a href="#tab-attribute" data-toggle="tab">{{ tab_attribute }}</a></li>
 			]]></search>
-			<add position="after"><![CDATA[
-            <li><a href="#tab-links" data-toggle="tab">{{ tab_links }}</a></li>
+			<add position="before"><![CDATA[
             <li><a href="#tab-kotlyars-catalog-foundation" data-toggle="tab">{{ tab_kotlyars_catalog_foundation }}</a></li>
 			]]></add>
 		</operation>
