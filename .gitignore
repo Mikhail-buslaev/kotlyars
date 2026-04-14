@@ -42,4 +42,4 @@ docker-compose.override.yml
 # Node / frontend temp if appears later
 node_modules/
 dist/
-build/
+build/snapshots/
