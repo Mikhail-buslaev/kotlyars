@@ -1,0 +1,107 @@
+<div class="panel panel-default kotlyars-vendor-filter">
+  <div class="panel-heading">{{ heading_title }}</div>
+  <div class="panel-body">
+    <div class="kotlyars-vendor-filter__leaf"><strong>{{ text_current_leaf }}:</strong> {{ leaf_label }}</div>
+    <form action="{{ form_action }}" method="get">
+      <input type="hidden" name="route" value="{{ form_route }}"/>
+      <input type="hidden" name="path" value="{{ current_path }}"/>
+      {% if current_sort %}
+      <input type="hidden" name="sort" value="{{ current_sort }}"/>
+      {% endif %}
+      {% if current_order %}
+      <input type="hidden" name="order" value="{{ current_order }}"/>
+      {% endif %}
+      {% if current_limit %}
+      <input type="hidden" name="limit" value="{{ current_limit }}"/>
+      {% endif %}
+
+      {% if attribute_groups %}
+      <div class="kotlyars-vendor-filter__group">
+        <div class="kotlyars-vendor-filter__title">{{ text_filterable_attributes }}</div>
+        {% for group in attribute_groups %}
+        <div class="kotlyars-vendor-filter__section">
+          <div class="kotlyars-vendor-filter__label">{{ group.label }}</div>
+          {% for option in group.options %}
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" name="{{ group.name }}" value="{{ option.key }}" {% if option.selected %}checked="checked"{% endif %} {% if option.disabled %}disabled="disabled"{% endif %}/>
+              {{ option.label }} <span class="text-muted">({{ option.count }})</span>
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% if range_groups %}
+      <div class="kotlyars-vendor-filter__group">
+        <div class="kotlyars-vendor-filter__title">{{ text_range_filters }}</div>
+        {% for range in range_groups %}
+        <div class="kotlyars-vendor-filter__section">
+          <div class="kotlyars-vendor-filter__label">{{ range.label }}</div>
+          <div class="row">
+            <div class="col-xs-6">
+              <input type="text" name="{{ range.input_min }}" value="{{ range.selected_min }}" placeholder="{{ range.min }}" class="form-control input-sm"/>
+            </div>
+            <div class="col-xs-6">
+              <input type="text" name="{{ range.input_max }}" value="{{ range.selected_max }}" placeholder="{{ range.max }}" class="form-control input-sm"/>
+            </div>
+          </div>
+          <div class="help-block">
+            {{ text_allowed_range }}: {{ range.min }} - {{ range.max }}{% if range.unit %} {{ range.unit }}{% elseif range.currency %} {{ range.currency }}{% endif %}
+          </div>
+          <div class="help-block">
+            {{ text_available_range }}: {{ range.available_min }} - {{ range.available_max }}{% if range.unit %} {{ range.unit }}{% elseif range.currency %} {{ range.currency }}{% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      <div class="buttons clearfix">
+        <button type="submit" class="btn btn-primary btn-sm pull-left">{{ button_apply }}</button>
+        <a href="{{ reset }}" class="btn btn-default btn-sm pull-right">{{ button_reset }}</a>
+      </div>
+    </form>
+  </div>
+</div>
+<script type="text/javascript"><!--
+(function() {
+	var form = document.currentScript.previousElementSibling ? document.currentScript.previousElementSibling.querySelector('form') : null;
+
+	if (!form) {
+		return;
+	}
+
+	form.addEventListener('submit', function() {
+		var separator = ',';
+		var groups = {};
+		var checkboxes = form.querySelectorAll('input[type="checkbox"][name^="kvs_"]');
+
+		Array.prototype.forEach.call(checkboxes, function(checkbox) {
+			if (!groups[checkbox.name]) {
+				groups[checkbox.name] = [];
+			}
+
+			if (checkbox.checked) {
+				groups[checkbox.name].push(checkbox.value);
+			}
+
+			checkbox.disabled = true;
+		});
+
+		Object.keys(groups).forEach(function(name) {
+			if (!groups[name].length) {
+				return;
+			}
+
+			var hidden = document.createElement('input');
+			hidden.type = 'hidden';
+			hidden.name = name;
+			hidden.value = groups[name].join(separator);
+			form.appendChild(hidden);
+		});
+	});
+})();
+//--></script>

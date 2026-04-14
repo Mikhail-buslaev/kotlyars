@@ -90,20 +90,7 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 
 	public function install() {
 		$this->ensureSchemaUpgrades();
-
-		$this->load->model('setting/event');
-
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_admin_add_product');
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_admin_edit_product');
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_admin_delete_product');
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_catalog_get_product');
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_catalog_get_products');
-
-		$this->model_setting_event->addEvent('kotlyars_catalog_foundation_admin_add_product', 'admin/model/catalog/product/addProduct/after', 'extension/module/kotlyars_catalog_foundation_event/addProductAfter');
-		$this->model_setting_event->addEvent('kotlyars_catalog_foundation_admin_edit_product', 'admin/model/catalog/product/editProduct/after', 'extension/module/kotlyars_catalog_foundation_event/editProductAfter');
-		$this->model_setting_event->addEvent('kotlyars_catalog_foundation_admin_delete_product', 'admin/model/catalog/product/deleteProduct/before', 'extension/module/kotlyars_catalog_foundation_event/deleteProductBefore');
-		$this->model_setting_event->addEvent('kotlyars_catalog_foundation_catalog_get_product', 'catalog/model/catalog/product/getProduct/after', 'extension/module/kotlyars_catalog_foundation_event/getProductAfter');
-		$this->model_setting_event->addEvent('kotlyars_catalog_foundation_catalog_get_products', 'catalog/model/catalog/product/getProducts/after', 'extension/module/kotlyars_catalog_foundation_event/getProductsAfter');
+		$this->ensureEventRegistrations();
 
 		$this->installModification();
 		$this->bootstrapNativeCatalog();
@@ -112,11 +99,9 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 	public function uninstall() {
 		$this->load->model('setting/event');
 
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_admin_add_product');
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_admin_edit_product');
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_admin_delete_product');
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_catalog_get_product');
-		$this->model_setting_event->deleteEventByCode('kotlyars_catalog_foundation_catalog_get_products');
+		foreach (array_keys($this->getEventDefinitions()) as $code) {
+			$this->model_setting_event->deleteEventByCode($code);
+		}
 
 		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "kotlyars_catalog_attribute_map`");
 		$this->db->query("DROP TABLE IF EXISTS `" . DB_PREFIX . "kotlyars_catalog_attribute_group_map`");
@@ -205,6 +190,7 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 
 	public function getOverview() {
 		$this->ensureSchemaUpgrades();
+		$this->ensureEventRegistrations();
 		$registry = $this->getRegistry();
 
 		return array(
@@ -629,6 +615,44 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 		}
 
 		return $values;
+	}
+
+	protected function getEventDefinitions() {
+		return array(
+			'kotlyars_catalog_foundation_admin_add_product' => array(
+				'trigger' => 'admin/model/catalog/product/addProduct/after',
+				'action'  => 'extension/module/kotlyars_catalog_foundation_event/addProductAfter'
+			),
+			'kotlyars_catalog_foundation_admin_edit_product' => array(
+				'trigger' => 'admin/model/catalog/product/editProduct/after',
+				'action'  => 'extension/module/kotlyars_catalog_foundation_event/editProductAfter'
+			),
+			'kotlyars_catalog_foundation_admin_delete_product' => array(
+				'trigger' => 'admin/model/catalog/product/deleteProduct/before',
+				'action'  => 'extension/module/kotlyars_catalog_foundation_event/deleteProductBefore'
+			),
+			'kotlyars_catalog_foundation_catalog_get_product' => array(
+				'trigger' => 'catalog/model/catalog/product/getProduct/after',
+				'action'  => 'extension/module/kotlyars_catalog_foundation_event/getProductAfter'
+			),
+			'kotlyars_catalog_foundation_catalog_get_products' => array(
+				'trigger' => 'catalog/model/catalog/product/getProducts/after',
+				'action'  => 'extension/module/kotlyars_catalog_foundation_event/getProductsAfter'
+			),
+			'kotlyars_catalog_foundation_catalog_column_left' => array(
+				'trigger' => 'catalog/controller/common/column_left/after',
+				'action'  => 'extension/module/kotlyars_catalog_foundation_event/columnLeftAfter'
+			)
+		);
+	}
+
+	public function ensureEventRegistrations() {
+		$this->load->model('setting/event');
+
+		foreach ($this->getEventDefinitions() as $code => $event) {
+			$this->model_setting_event->deleteEventByCode($code);
+			$this->model_setting_event->addEvent($code, $event['trigger'], $event['action']);
+		}
 	}
 
 	protected function buildAlignmentNotice($leaf_code, array $selected_categories) {
