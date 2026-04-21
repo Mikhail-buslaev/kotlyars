@@ -1,0 +1,210 @@
+.module-kotlyars-vendor-filter {
+  margin-bottom: 20px;
+}
+
+.module-kotlyars-vendor-filter .module-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.module-kotlyars-vendor-filter .panel-group {
+  margin-bottom: 0;
+}
+
+.module-kotlyars-vendor-filter .panel + .panel {
+  margin-top: 10px;
+}
+
+.module-kotlyars-vendor-filter .panel-heading {
+  padding: 0;
+}
+
+.module-kotlyars-vendor-filter .panel-title {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.module-kotlyars-vendor-filter .accordion-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px 16px;
+  text-decoration: none;
+}
+
+.module-kotlyars-vendor-filter .accordion-toggle .fa {
+  transition: transform 0.2s ease;
+}
+
+.module-kotlyars-vendor-filter .accordion-toggle.collapsed .fa {
+  transform: rotate(-90deg);
+}
+
+.module-kotlyars-vendor-filter__leaf {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.module-kotlyars-vendor-filter__leaf-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.module-kotlyars-vendor-filter__leaf-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.module-kotlyars-vendor-filter__leaf-value {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.module-kotlyars-vendor-filter .reset-filter {
+  flex: 0 0 auto;
+}
+
+.module-kotlyars-vendor-filter__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.module-kotlyars-vendor-filter .panel-body > .kotlyars-vendor-filter__section + .kotlyars-vendor-filter__section {
+  margin-top: 32px !important;
+  padding-top: 24px !important;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.module-kotlyars-vendor-filter__label {
+  margin-bottom: 8px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.module-kotlyars-vendor-filter__options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.module-kotlyars-vendor-filter__options label {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+  flex-wrap: nowrap;
+  margin: 0;
+  width: 100%;
+  min-height: 36px;
+}
+
+.module-kotlyars-vendor-filter__option-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.module-kotlyars-vendor-filter__options input[type="checkbox"] {
+  flex: 0 0 auto;
+  margin: 0;
+}
+
+.module-kotlyars-vendor-filter__options .links-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: block;
+}
+
+.module-kotlyars-vendor-filter__options .count-badge {
+  flex: 0 0 auto;
+  min-width: 32px;
+  margin-left: auto;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0.72;
+}
+
+.module-kotlyars-vendor-filter__option-count {
+  align-self: center;
+}
+
+.module-kotlyars-vendor-filter__options label.is-disabled {
+  opacity: 0.55;
+}
+
+.module-kotlyars-vendor-filter__options label.is-disabled .count-badge {
+  opacity: 0.5;
+}
+
+.module-kotlyars-vendor-filter__range-inputs {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.module-kotlyars-vendor-filter__range-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+
+.module-kotlyars-vendor-filter__range-caption {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+
+.module-kotlyars-vendor-filter__meta {
+  margin-top: 10px;
+}
+
+.module-kotlyars-vendor-filter__meta .help-block {
+  margin-bottom: 6px;
+  line-height: 1.45;
+}
+
+.module-kotlyars-vendor-filter__meta .help-block:last-child {
+  margin-bottom: 0;
+}
+
+.module-kotlyars-vendor-filter__actions {
+  display: flex;
+}
+
+.module-kotlyars-vendor-filter__actions .btn {
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .module-kotlyars-vendor-filter__leaf-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .module-kotlyars-vendor-filter .reset-filter {
+    align-self: flex-start;
+  }
+
+  .module-kotlyars-vendor-filter__range-inputs {
+    grid-template-columns: 1fr;
+  }
+}

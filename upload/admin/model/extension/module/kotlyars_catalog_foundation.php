@@ -639,9 +639,13 @@ class ModelExtensionModuleKotlyarsCatalogFoundation extends Model {
 				'trigger' => 'catalog/model/catalog/product/getProducts/after',
 				'action'  => 'extension/module/kotlyars_catalog_foundation_event/getProductsAfter'
 			),
-			'kotlyars_catalog_foundation_catalog_column_left' => array(
-				'trigger' => 'catalog/controller/common/column_left/after',
-				'action'  => 'extension/module/kotlyars_catalog_foundation_event/columnLeftAfter'
+			'kotlyars_catalog_foundation_catalog_category_controller' => array(
+				'trigger' => 'catalog/controller/product/category/before',
+				'action'  => 'extension/module/kotlyars_catalog_foundation_event/categoryControllerBefore'
+			),
+			'kotlyars_catalog_foundation_catalog_category_view' => array(
+				'trigger' => 'catalog/view/product/category/before',
+				'action'  => 'extension/module/kotlyars_catalog_foundation_event/categoryViewBefore'
 			)
 		);
 	}

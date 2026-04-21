@@ -1,0 +1,45 @@
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+logs/
+storage/logs/*
+
+# OpenCart cache/session/modification runtime
+storage/cache/*
+storage/session/*
+storage/modification/*
+storage/upload/*
+
+# Keep folders
+!storage/cache/.gitkeep
+!storage/session/.gitkeep
+!storage/modification/.gitkeep
+!storage/upload/.gitkeep
+
+# Database / dumps
+*.sql
+*.sql.gz
+
+# Archives / snapshots artifacts
+*.tar
+*.tar.gz
+snapshots/**/*.tar.gz
+snapshots/**/*.sql
+
+# Docker local overrides
+docker-compose.override.yml
+
+# Env files
+.env
+.env.*
+
+# Node / frontend temp if appears later
+node_modules/
+dist/
+build/snapshots/

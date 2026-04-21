@@ -1,9 +1,17 @@
-<div class="module module-filter module-kotlyars-vendor-filter">
-  <div class="module-body">
-    <div class="module-title">{{ heading_title }}</div>
-    <div class="module-content">
-      <div class="kotlyars-vendor-filter__leaf"><strong>{{ text_current_leaf }}:</strong> {{ leaf_label }}</div>
-      <form action="{{ form_action }}" method="get">
+{% set filter_id = 'kotlyars-vendor-filter-' ~ current_path|replace({'_': '-'}) %}
+{% set section_id = filter_id ~ '-sections' %}
+<div class="desktop-filter-wrapper kotlyars-vendor-filter-wrapper">
+  <div id="{{ filter_id }}" class="module module-filter module-kotlyars-vendor-filter">
+    <div class="module-body">
+      <div class="kotlyars-vendor-filter__leaf">
+        <div class="kotlyars-vendor-filter__leaf-head">
+          <span class="kotlyars-vendor-filter__leaf-label">{{ text_current_leaf }}</span>
+          <a href="{{ reset }}" class="reset-filter btn">{{ button_reset }}</a>
+        </div>
+        <span class="kotlyars-vendor-filter__leaf-value">{{ leaf_label }}</span>
+      </div>
+
+      <form action="{{ form_action }}" method="get" class="kotlyars-vendor-filter__form">
         <input type="hidden" name="route" value="{{ form_route }}"/>
         <input type="hidden" name="path" value="{{ current_path }}"/>
         {% if current_sort %}
@@ -16,52 +24,70 @@
         <input type="hidden" name="limit" value="{{ current_limit }}"/>
         {% endif %}
 
-        {% if attribute_groups %}
-        <div class="kotlyars-vendor-filter__group">
-          <div class="kotlyars-vendor-filter__title">{{ text_filterable_attributes }}</div>
-          {% for group in attribute_groups %}
-          <div class="kotlyars-vendor-filter__section">
-            <div class="kotlyars-vendor-filter__label">{{ group.label }}</div>
-            {% for option in group.options %}
-            <label class="filter-checkbox">
-              <input type="checkbox" name="{{ group.name }}" value="{{ option.key }}" {% if option.selected %}checked="checked"{% endif %} {% if option.disabled %}disabled="disabled"{% endif %}/>
-              <span>{{ option.label }}</span>
-              <span class="filter-count">({{ option.count }})</span>
-            </label>
-            {% endfor %}
-          </div>
-          {% endfor %}
-        </div>
-        {% endif %}
-
-        {% if range_groups %}
-        <div class="kotlyars-vendor-filter__group">
-          <div class="kotlyars-vendor-filter__title">{{ text_range_filters }}</div>
-          {% for range in range_groups %}
-          <div class="kotlyars-vendor-filter__section">
-            <div class="kotlyars-vendor-filter__label">{{ range.label }}</div>
-            <div class="row">
-              <div class="col-xs-6">
-                <input type="text" name="{{ range.input_min }}" value="{{ range.selected_min }}" placeholder="{{ range.min }}" class="form-control"/>
-              </div>
-              <div class="col-xs-6">
-                <input type="text" name="{{ range.input_max }}" value="{{ range.selected_max }}" placeholder="{{ range.max }}" class="form-control"/>
+        <div class="panel-group kotlyars-vendor-filter__panels" id="{{ section_id }}">
+          {% if attribute_groups %}
+          <div class="panel panel-default kotlyars-vendor-filter__panel">
+            <div class="panel-heading">
+              <div class="panel-title">
+                <a href="#{{ filter_id }}-attributes" class="accordion-toggle" data-toggle="collapse" data-parent="#{{ section_id }}" aria-expanded="true">
+                  {{ text_filterable_attributes }}
+                  <em class="fa fa-caret-down"></em>
+                </a>
               </div>
             </div>
-            <div class="help-block">
-              {{ text_allowed_range }}: {{ range.min }} - {{ range.max }}{% if range.unit %} {{ range.unit }}{% elseif range.currency %} {{ range.currency }}{% endif %}
-            </div>
-            <div class="help-block">
-              {{ text_available_range }}: {{ range.available_min }} - {{ range.available_max }}{% if range.unit %} {{ range.unit }}{% elseif range.currency %} {{ range.currency }}{% endif %}
+            <div id="{{ filter_id }}-attributes" class="panel-collapse collapse in">
+              <div class="panel-body">
+                {% for group in attribute_groups %}
+                <div class="kotlyars-vendor-filter__section">
+                  <div class="kotlyars-vendor-filter__label">{{ group.label }}</div>
+                  <div class="filter-checkbox kotlyars-vendor-filter__options">
+                    {% for option in group.options %}
+                    <label class="{% if option.disabled and not option.selected %}is-disabled{% endif %}">
+                      <span class="kotlyars-vendor-filter__option-main">
+                        <input type="checkbox" name="{{ group.name }}" value="{{ option.key }}" {% if option.selected %}checked="checked"{% endif %} {% if option.disabled %}disabled="disabled"{% endif %}/>
+                        <span class="links-text">{{ option.label }}</span>
+                      </span>
+                      <span class="filter-item-bg"></span>
+                    </label>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% endfor %}
+
+                {% set vendor_range_count = 0 %}
+                {% for range in range_groups %}
+                  {% if range.code != 'price' %}
+                    {% set vendor_range_count = vendor_range_count + 1 %}
+                  {% endif %}
+                {% endfor %}
+
+                {% if vendor_range_count %}
+                {% for range in range_groups %}
+                {% if range.code != 'price' %}
+                <div class="kotlyars-vendor-filter__section kotlyars-vendor-filter__section--range">
+                  <div class="kotlyars-vendor-filter__label">{{ range.label }}</div>
+                  <div class="kotlyars-vendor-filter__range-inputs">
+                    <label class="kotlyars-vendor-filter__range-field">
+                      <span class="kotlyars-vendor-filter__range-caption">Min</span>
+                      <input type="text" name="{{ range.input_min }}" value="{{ range.selected_min }}" placeholder="{{ range.min }}" class="form-control"/>
+                    </label>
+                    <label class="kotlyars-vendor-filter__range-field">
+                      <span class="kotlyars-vendor-filter__range-caption">Max</span>
+                      <input type="text" name="{{ range.input_max }}" value="{{ range.selected_max }}" placeholder="{{ range.max }}" class="form-control"/>
+                    </label>
+                  </div>
+                </div>
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+              </div>
             </div>
           </div>
-          {% endfor %}
+          {% endif %}
         </div>
-        {% endif %}
 
-        <div class="buttons">
-          <button type="submit" class="btn btn-primary btn-block">{{ button_apply }}</button>
-          <a href="{{ reset }}" class="btn btn-default btn-block">{{ button_reset }}</a>
+        <div class="kotlyars-vendor-filter__actions">
+          <button type="submit" class="btn btn-primary">{{ button_apply }}</button>
         </div>
       </form>
     </div>
@@ -69,7 +95,8 @@
 </div>
 <script type="text/javascript"><!--
 (function() {
-	var form = document.currentScript.previousElementSibling ? document.currentScript.previousElementSibling.querySelector('form') : null;
+	var root = document.getElementById('{{ filter_id }}');
+	var form = root ? root.querySelector('form') : null;
 
 	if (!form) {
 		return;

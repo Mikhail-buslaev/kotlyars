@@ -18,6 +18,10 @@ class ControllerExtensionModuleKotlyarsCatalogFoundation extends Controller {
 			return '';
 		}
 
+		if ($this->config->get('config_theme') === 'journal3') {
+			$this->document->addStyle('catalog/view/theme/journal3/stylesheet/kotlyars_catalog_foundation.css');
+		}
+
 		$data['heading_title'] = $this->language->get('heading_title');
 		$data['text_current_leaf'] = $this->language->get('text_current_leaf');
 		$data['text_filterable_attributes'] = $this->language->get('text_filterable_attributes');
