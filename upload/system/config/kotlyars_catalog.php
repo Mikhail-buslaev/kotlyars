@@ -126,6 +126,13 @@ $_['kotlyars_catalog_leaf_registry'] = array(
 		'domain_label' => 'Fine Art',
 		'label'        => 'Sculptures',
 		'path'         => array('Fine Art', 'Sculptures')
+	),
+	'jewelry' => array(
+		'code'         => 'jewelry',
+		'domain'       => 'jewelry',
+		'domain_label' => 'Jewelry',
+		'label'        => 'Jewelry',
+		'path'         => array('Jewelry')
 	)
 );
 
@@ -154,7 +161,8 @@ $_['kotlyars_catalog_native_category_nodes'] = array(
 	'fine_art.paintings_mixed_media' => array('code' => 'fine_art.paintings_mixed_media', 'label' => 'Paintings & Mixed Media', 'parent_code' => 'fine_art', 'is_leaf' => true, 'leaf_code' => 'fine_art.paintings_mixed_media'),
 	'fine_art.fine_art_photography' => array('code' => 'fine_art.fine_art_photography', 'label' => 'Fine Art Photography', 'parent_code' => 'fine_art', 'is_leaf' => true, 'leaf_code' => 'fine_art.fine_art_photography'),
 	'fine_art.prints_multiples' => array('code' => 'fine_art.prints_multiples', 'label' => 'Prints & Multiples', 'parent_code' => 'fine_art', 'is_leaf' => true, 'leaf_code' => 'fine_art.prints_multiples'),
-	'fine_art.sculptures' => array('code' => 'fine_art.sculptures', 'label' => 'Sculptures', 'parent_code' => 'fine_art', 'is_leaf' => true, 'leaf_code' => 'fine_art.sculptures')
+	'fine_art.sculptures' => array('code' => 'fine_art.sculptures', 'label' => 'Sculptures', 'parent_code' => 'fine_art', 'is_leaf' => true, 'leaf_code' => 'fine_art.sculptures'),
+	'jewelry' => array('code' => 'jewelry', 'label' => 'Jewelry', 'parent_code' => '', 'is_leaf' => true, 'leaf_code' => 'jewelry')
 );
 
 $_['kotlyars_catalog_attribute_definitions'] = array(
@@ -212,6 +220,16 @@ $_['kotlyars_catalog_attribute_definitions'] = array(
 		'code'       => 'item_type',
 		'label'      => 'Item Type',
 		'input_type' => 'select'
+	),
+	'jewelry_type' => array(
+		'code'       => 'jewelry_type',
+		'label'      => 'Jewelry Type',
+		'input_type' => 'select'
+	),
+	'designer' => array(
+		'code'       => 'designer',
+		'label'      => 'Designer',
+		'input_type' => 'select'
 	)
 );
 
@@ -235,6 +253,8 @@ $_['kotlyars_catalog_native_attribute_registry'] = array(
 	'location' => array('code' => 'location', 'label' => 'Location', 'group_code' => 'vendor_store', 'sort_order' => 90),
 	'creator_brand' => array('code' => 'creator_brand', 'label' => 'Creator / Brand', 'group_code' => 'vendor_store', 'sort_order' => 100),
 	'item_type' => array('code' => 'item_type', 'label' => 'Item Type', 'group_code' => 'vendor_store', 'sort_order' => 110),
+	'jewelry_type' => array('code' => 'jewelry_type', 'label' => 'Jewelry Type', 'group_code' => 'vendor_store', 'sort_order' => 112),
+	'designer' => array('code' => 'designer', 'label' => 'Designer', 'group_code' => 'vendor_store', 'sort_order' => 114),
 	'carat' => array('code' => 'carat', 'label' => 'Carat', 'group_code' => 'vendor_store', 'sort_order' => 120)
 );
 
@@ -755,6 +775,36 @@ $_['kotlyars_catalog_leaf_attribute_map'] = array(
 				'bronze_sculpture' => 'Bronze Sculpture'
 			)
 		)
+	),
+	'jewelry' => array(
+		array(
+			'code' => 'jewelry_type',
+			'options' => array(
+				'bracelet' => 'Bracelet',
+				'brooch' => 'Brooch',
+				'cufflink_stud_tie_clip' => 'Cufflink, Stud & Tie Clip',
+				'earring' => 'Earring',
+				'necklace' => 'Necklace',
+				'precious_accessory' => 'Precious Accessory',
+				'ring' => 'Ring'
+			)
+		),
+		array(
+			'code' => 'designer',
+			'options' => array(
+				'buccellati' => 'Buccellati',
+				'bucherer' => 'Bucherer',
+				'bulgari' => 'Bulgari',
+				'cartier' => 'Cartier',
+				'chanel' => 'Chanel',
+				'chopard' => 'Chopard',
+				'hermes' => 'Hermes',
+				'jogani' => 'Jogani',
+				'studio_renn' => 'Studio Renn',
+				'tiffany_co' => 'Tiffany & Co.',
+				'other' => 'Other'
+			)
+		)
 	)
 );
 
@@ -780,35 +830,35 @@ $_['kotlyars_catalog_leaf_range_map'] = array(
 		array('code' => 'price', 'min' => 134.00, 'max' => 6000000.00, 'currency' => 'USD')
 	),
 	'precious_metals.gold.gold_by_weight' => array(
-		array('code' => 'weight', 'min' => 1.00, 'max' => 1000.00, 'unit' => 'gram'),
+		array('code' => 'weight', 'min' => 1.00, 'max' => 10000.00, 'unit' => 'gram'),
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'precious_metals.gold.gold_bars_rounds_by_brand' => array(
-		array('code' => 'weight', 'min' => 1.00, 'max' => 1000.00, 'unit' => 'gram'),
+		array('code' => 'weight', 'min' => 1.00, 'max' => 10000.00, 'unit' => 'gram'),
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'precious_metals.gold.vintage_gold_bars_rounds' => array(
-		array('code' => 'weight', 'min' => 1.00, 'max' => 250.00, 'unit' => 'gram'),
+		array('code' => 'weight', 'min' => 1.00, 'max' => 10000.00, 'unit' => 'gram'),
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'precious_metals.silver.silver_bars' => array(
-		array('code' => 'weight', 'min' => 1.00, 'max' => 5000.00, 'unit' => 'gram'),
+		array('code' => 'weight', 'min' => 1.00, 'max' => 10000.00, 'unit' => 'gram'),
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'precious_metals.silver.industrial_silver' => array(
-		array('code' => 'weight', 'min' => 1.00, 'max' => 1000.00, 'unit' => 'gram'),
+		array('code' => 'weight', 'min' => 1.00, 'max' => 10000.00, 'unit' => 'gram'),
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'precious_metals.silver.silver_rounds' => array(
-		array('code' => 'weight', 'min' => 100.00, 'max' => 1000.00, 'unit' => 'gram'),
+		array('code' => 'weight', 'min' => 1.00, 'max' => 10000.00, 'unit' => 'gram'),
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'precious_metals.platinum.platinum_bars_rounds' => array(
-		array('code' => 'weight', 'min' => 1.00, 'max' => 1000.00, 'unit' => 'gram'),
+		array('code' => 'weight', 'min' => 1.00, 'max' => 10000.00, 'unit' => 'gram'),
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'precious_metals.platinum.industrial_platinum' => array(
-		array('code' => 'weight', 'min' => 1.00, 'max' => 1000.00, 'unit' => 'gram'),
+		array('code' => 'weight', 'min' => 1.00, 'max' => 10000.00, 'unit' => 'gram'),
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'fine_art.drawings_pastels' => array(
@@ -824,6 +874,9 @@ $_['kotlyars_catalog_leaf_range_map'] = array(
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	),
 	'fine_art.sculptures' => array(
+		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
+	),
+	'jewelry' => array(
 		array('code' => 'price', 'min' => 1.00, 'max' => 1000000.00, 'currency' => 'USD')
 	)
 );

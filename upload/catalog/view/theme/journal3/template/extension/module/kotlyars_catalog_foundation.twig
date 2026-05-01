@@ -56,14 +56,14 @@
 
                 {% set vendor_range_count = 0 %}
                 {% for range in range_groups %}
-                  {% if range.code != 'price' %}
+                  {% if range.code != 'price' or leaf_code == 'jewelry' %}
                     {% set vendor_range_count = vendor_range_count + 1 %}
                   {% endif %}
                 {% endfor %}
 
                 {% if vendor_range_count %}
                 {% for range in range_groups %}
-                {% if range.code != 'price' %}
+                {% if range.code != 'price' or leaf_code == 'jewelry' %}
                 <div class="kotlyars-vendor-filter__section kotlyars-vendor-filter__section--range">
                   <div class="kotlyars-vendor-filter__label">{{ range.label }}</div>
                   <div class="kotlyars-vendor-filter__range-inputs">
