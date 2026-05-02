@@ -1,0 +1,229 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+      </div>
+      <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if error_warning %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    {% if success %}
+    <div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+    {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-list"></i> {{ text_list }}</h3>
+      </div>
+      <div class="panel-body">
+        <div class="well">
+          <div class="row">
+            <div class="col-sm-3">
+                <div class="form-group">
+                  <label class="control-label" for="input-name">{{ entry_name }}</label>
+                  <input type="text" name="filter_name" value="" placeholder="{{ entry_name }}" id="input-name" class="form-control" />
+                  <input type="hidden" name="product_id"> 
+                </div>
+              </div>
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <label class="control-label" for="input-customer_name">{{ entry_customer_name }}</label>
+                  <input type="text" name="filter_customer_name" value="" placeholder="{{ entry_customer_name }}" id="input-model" class="form-control" />
+                  <input type="hidden" name="customer_id"> 
+                </div>
+            </div>
+              <div class="col-sm-3">
+                <div class="form-group">
+                  <label class="control-label" for="input-price">{{ entry_price }}</label>
+                  <input type="text" name="filter_price" value="{{ filter_price }}" placeholder="{{ entry_price }}" id="myInput" class="form-control" />
+                </div>
+            </div>
+            <div class="col-sm-3">
+				<div class="form-group">
+					<label class="control-label">&nbsp;</label>
+					<button type="button" id="button-filter" class="btn btn-primary btn-block"><i class="fa fa-filter"></i> {{ button_filter }}</button>
+				  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <form action="{{ delete }}" method="post" enctype="multipart/form-data" id="form-tmdauctionwinner">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <td style="width: 1px;" class="text-center"><input type="checkbox" onclick="$('input[name*=\'selected\']').prop('checked', this.checked);" /></td>
+                  <td class="text-center">{{ column_image }}</td>
+                  <td class="text-left">{% if sort == 'pd.name' %}
+                    <a href="{{ sort_name }}" class="{{ order|lower }}">{{ column_name }}</a>
+                    {% else %}
+                    <a href="{{ sort_name }}">{{ column_name }}</a>
+                   {% endif %}</td>
+                  <td class="text-left">{% if sort == 'p.customer_name' %}
+                    <a href="{{ sort_customer_name }}" class="{{ order|lower }}">{{ column_customer_name }}</a>
+                    {% else %}
+                    <a href="{{ sort_customer_name }}">{{ column_customer_name }}</a>
+                    {% endif %}</td>
+                  <td class="text-left">{% if sort == 'p.customer_email' %}
+                    <a href="{{ sort_customer_email }}" class="{{ order|lower }}">{{ column_customer_email }}</a>
+                    {% else %}
+                    <a href="{{ sort_customer_email }}">{{ column_customer_email }}</a>
+                    {% endif %}</td>
+                  <td class="text-left">{% if sort == 'p.date_added' %}
+                    <a href="{{ sort_date_added }}" class="{{ order|lower }}">{{ column_date_added }}</a>
+                    {% else %}
+                    <a href="{{ sort_date_added }}">{{ column_date_added }}</a>
+                    {% endif %}</td>
+                  <td class="text-left">{% if sort == 'p.end_date' %}
+                    <a href="{{ sort_end_date }}" class="{{ order|lower }}">{{ column_end_date }}</a>
+                    {% else %}
+                    <a href="{{ sort_end_date }}">{{ column_end_date }}</a>
+                    {% endif %}</td>
+                  <td class="text-left">{% if sort == 'p.price' %}
+                    <a href="{{ sort_price }}" class="{{ order|lower }}">{{ column_price }}</a>
+                    {% else %}
+                    <a href="{{ sort_price }}">{{ column_price }}</a>
+                    {% endif %}</td>
+                </tr>
+              </thead>
+              <tbody id="myTable">
+                {% if winning_products %}
+                  {% for auction in winning_products %}
+                <tr>
+                  <td class="text-center">{% if auction.bid_id in selected %}
+                    <input type="checkbox" name="selected[]" value="{{ auction.bid_id }}" checked="checked" />
+                    {% else %}
+                    <input type="checkbox" name="selected[]" value="{{ auction.bid_id }}" />
+                    {% endif %}
+                  </td>
+                  <td class="text-center">{% if auction.image %}
+                    <img src="{{ auction.image }}" alt="{{ auction.product_name }}" class="img-thumbnail" />
+                    {% else %}
+                    <span class="img-thumbnail list"><i class="fa fa-camera fa-2x"></i></span>
+                    {% endif %}</td>
+                  <td class="text-left">{{ auction.product_name }}</td>
+                  <td class="text-left">{{ auction.customer_name }}</td>
+                  <td class="text-left">{{ auction.customer_email }}</td>
+                  <td class="text-left">{{ auction.date_added }}</td>
+                  <td class="text-left">{{ auction.end_date }}</td>
+                  <td class="text-left">{{ auction.bid_amount }}</td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                  <td class="text-center" colspan="8">{{ text_no_results }}</td>
+                </tr>
+                {% endif %}
+              </tbody>
+            </table>
+          </div>
+        </form>
+        <div class="row">
+          <div class="col-sm-6 text-left">{{ pagination }}</div>
+          <div class="col-sm-6 text-right">{{ results }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+    $('.datetime').datetimepicker({
+      pickDate: true,
+      pickTime: true
+    });
+  </script>
+  <script type="text/javascript"><!--
+$('#button-filter').on('click', function() {
+	var url = 'index.php?route=extension/tmd/tmdauctionwinner&user_token={{ user_token }}';
+
+	var filter_name = $('input[name=\'product_id\']').val();
+
+	if (filter_name) {
+		url += '&filter_name=' + encodeURIComponent(filter_name);
+	}
+
+	var filter_customer_name = $('input[name=\'customer_id\']').val();
+
+	if (filter_customer_name) {
+		url += '&filter_customer_name=' + encodeURIComponent(filter_customer_name);
+	}
+
+    var filter_price = $('input[name=\'filter_price\']').val();
+
+  if (filter_price) {
+    url += '&filter_price=' + encodeURIComponent(filter_price);
+  }
+
+	location = url;
+});
+//--></script>
+  <script type="text/javascript"><!--
+$('input[name=\'filter_name\']').autocomplete({
+	'source': function(request, response) {
+		$.ajax({
+			url: 'index.php?route=catalog/product/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+			dataType: 'json',
+			success: function(json) {
+				response($.map(json, function(item) {
+					return {
+						label: item['name'],
+						value: item['product_id']
+					}
+				}));
+			}
+		});
+	},
+	'select': function(item) {
+    $('input[name=\'filter_name\']').val(item['label']);
+		$('input[name=\'product_id\']').val(item['value']);
+	}
+});
+//--></script>
+
+<script type="text/javascript"><!--
+$('input[name=\'filter_customer_name\']').autocomplete({
+  'source': function(request, response) {
+    $.ajax({
+      url: 'index.php?route=customer/customer/autocomplete&user_token={{ user_token }}&filter_name=' +  encodeURIComponent(request),
+      dataType: 'json',
+      success: function(json) {
+        response($.map(json, function(item) {
+          return {
+            label: item['name'],
+            value: item['customer_id']
+          }
+        }));
+      }
+    });
+  },
+  'select': function(item) {
+    $('input[name=\'filter_customer_name\']').val(item['label']);
+    $('input[name=\'customer_id\']').val(item['value']);
+  }
+});
+</script>
+
+<script>
+$(document).ready(function(){
+  $("#myInput").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#myTable tr").filter(function() {
+      $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
+  });
+});
+</script>
+
+</div>
+{{ footer }}

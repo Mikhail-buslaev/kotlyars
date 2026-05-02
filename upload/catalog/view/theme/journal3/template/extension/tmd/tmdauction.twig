@@ -1,0 +1,109 @@
+{{ header }}
+{% if journal3.get('pageTitlePosition') == 'top' %}
+  <h1 class="title page-title"><span class="page-title-text">{{ heading_title }}</span></h1>
+{% endif %}
+<div class="breadcrumbs">
+  <ul class="breadcrumb">
+    {% for breadcrumb in breadcrumbs %}
+      <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+{{ journal3_top }}
+<div class="container extension-tmdauction tmdauction-col">
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="pull-right tmdauction-buttons">
+				<a href="{{ mywinbid }}" class="btn btn-primary btn-lg">{{ button_mywinningproduct }}</a>
+				<a href="{{ mybid }}" class="btn btn-success btn-lg">{{ button_mybiddingproduct }}</a>
+			</div>
+			
+			{% if journal3.get('pageTitlePosition') == 'default' %}
+			{% if products is not empty %}
+			<h1 class="title page-title">{{ text_mainheading }}</h1>
+			{% else %}
+			<h1 class="title page-title">{{ text_no_results }}</h1>
+			{% endif %}
+			{% endif %}
+		</div>
+	</div><br/>
+    <div id="content">
+    	<div id="products" class="main-products main-products-style product-grid auto-grid">
+			{% for product in products %}
+			<div class="product-layout product-grid">
+				<div class="product-thumb">
+					<div class="image"><a href="{{ product.href }}"><img src="{{ product.image }}" alt="{{ product.name }}" title="{{ product.name }}" class="img-responsive"></a></div>
+					<div>
+						<div class="caption">
+							<h4 class="name">
+								<a href="{{ product.href }}">{{ product.name }}</a>
+							</h4>
+							<p>{{ product.description }}</p>
+						</div>
+        				{% if product.start_time < product.date %}
+						<div class="auction-category">
+						    <div class="clockbtn"> <i class="fa fa-clock-o"> </i> </div>
+							<div class="coundown-main">
+								<div id="timer" class="timer{{ product.auction_id }}">
+								  <div class="days" id="days{{ product.auction_id }}"></div>
+								  <div class="hours" id="hours{{ product.auction_id }}"></div>
+								  <div class="minutes" id="minutes{{ product.auction_id }}"></div>
+								  <div class="seconds" id="seconds{{ product.auction_id }}"></div>
+								</div>
+							</div>
+						</div>
+						<script>
+							var auction_id      = '{{ product.auction_id }}';
+							// Update the count down every 1 second
+							$('.timer'+auction_id).each(function() {
+							var end_time 		    = '{{ product.end_time }}';
+							var date 			      = '{{ product.time }}';
+							var auction_id      = '{{ product.auction_id }}';
+							var countDownDate   = end_time * 1000;
+							var now             = date * 1000;
+							var x = setInterval(function() {
+
+							now = now + 1000;
+
+							var distance = countDownDate - now;
+							
+							if (distance < 0) {
+							clearInterval(x);
+							$('.timer' + auction_id).html('');
+							$('.timer' + auction_id).html('<b style="color:#fff;">{{ text_expired }}</b>');
+							}
+							// Time calculations for days, hours, minutes and seconds
+							var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+							var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+							var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+							var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+							// Output the result in an element with id="demo"
+
+							$('#days' + auction_id).html(days + "<span>D</span>");
+					        $('#hours' + auction_id).html(hours + "<span>H</span>");
+					        $('#minutes' + auction_id).html(minutes + "<span>M</span>");
+					        $('#seconds' + auction_id).html(seconds + "<span>S</span>");
+							
+							}, 1000);
+                             });
+						    </script>
+						{% else %}
+							<div class="auction-category">
+						    <div class="clockbtn"> <i class="fa fa-clock-o"> </i> </div>
+							<div class="coundown-main">
+								<h2 class="auction-text">{{ text_coming_soon }}</h2>
+							</div>
+						</div>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+		</div>
+      <div class="row">
+        <div class="col-sm-6 text-left">{{ pagination }}</div>
+        <div class="col-sm-6 text-right">{{ results }}</div>
+      </div>
+    </div>
+  </div>
+{{ footer }}

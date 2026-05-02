@@ -1,0 +1,44 @@
+<div class="table-responsive details_table">
+	<center><b>{{ text_normal_bid }}</b></center>
+	<table class="table">
+		<thead>
+			<tr class="details_table_head">
+				{% if bidder_name == 1 %}
+				<th class="text-left">{{ text_bidder_name }}</th>
+				{% endif %}
+				{% if bidding_amount == 1 %}
+				<th class="text-center">{{ text_bidder_amount }}</th>
+				{% endif %}
+				{% if date_added == 1 %}
+				<th class="text-left">{{ text_bidder_date_add }}</th>
+				{% endif %}
+				{% if bid_type == 1 %}
+				<th class="text-left">{{ text_bid_type }}</th>
+				{% endif %}
+			</tr>
+		</thead>
+		<tbody class="newupdate">
+			{% for value in bid_details %}
+			<tr class="details_table_head" style="font-size:14px;">
+				{% if bidder_name == 1 %}
+				<td class="text-left">{{ value['biddername'] }}</td>
+				{% endif %}
+				{% if bidding_amount == 1 %}
+				<td class="text-center">{{ value['bid_amount'] }}</td>
+				{% endif %}
+				{% if date_added == 1 %}
+				<td class="text-left">{{ value['date_added'] }}</td>
+				{% endif %}
+				{% if bid_type == 1 %}
+				<td class="text-left">{{ "Normal bid" }}</td>
+				{% endif %}
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+<div class="row">
+  <div class="col-sm-6 text-left">{{ pagination }}</div>
+  <div class="col-sm-6 text-right">{{ results }}</div>
+</div>

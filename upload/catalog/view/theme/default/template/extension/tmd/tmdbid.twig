@@ -1,0 +1,263 @@
+<!--- Auction -->
+{% if module_status == 1 %}
+{% if auction_info %}
+{% if active_couter == 1 %}
+{% if win_product_id == 0 %}
+<div id="auction-main">
+	<div class="auction-toppart" style="background:url('{{ thumbheaderlogo }}')no-repeat;background-size: cover;">
+		<div class="auction-header">
+		{{ entry_titleinpropage }} <i class="fa fa-clock-o" aria-hidden="true"></i>
+		</div>
+		<div class="coundown-main">
+			<div id="timer" class="timer{{ auction_id }}">
+				<div id="days" class="days{{ auction_id }}"></div>
+				<div id="hours" class="hours{{ auction_id }}"></div>
+				<div id="minutes" class="minutes{{ auction_id }}"></div>
+				<div id="seconds" class="seconds{{ auction_id }}"></div>
+			</div>
+		</div>
+		
+		<input type="hidden" name="product_id" value="{{ product_id }}">
+		<div id="error_login"></div>
+		<div id="error_amount"></div>
+		
+		<div class="bid-container">
+			<form class="form-inline" method="post" onsubmit="return false">
+				{% if (start_time < currentdate) %}
+				<div class="row">
+					<div class="col-sm-12">
+					<!-- new code 19 march 2020 -->
+					<input type="text" name="bid_amount" onkeypress="return onlynumber(event)" class="form-control bidinput" id="bidinput" placeholder="{{ text_hurry_up }}" data-original-title="bid now!">
+					<!-- new code 19 march 2020 -->
+					<button type="button" id="updatebid" class="btn btn-info bid-button">{{ button_bid_now }}</button>
+					</div>
+				</div>
+				{% endif %}
+			</form>
+        </div>
+		<div class="middle-container">
+            <div class="details-btn">
+               <button id="bidding-list" class="btn-default btn auction-details"> {{ text_bidding_list }}</button>
+            </div>
+            <div class="details-btn">
+               <button id="aution-details" class="btn-default btn auction-details"> {{ text_auction_detail }}</button>
+            </div>
+		</div>
+	</div>
+	<div class="auction-bottom">
+		<div class="bidding-listmain" style="display:none">
+			<div id="myplans"></div>
+			<script type="text/javascript"><!--
+			$('#myplans').delegate('.pagination a', 'click', function(e) {
+			e.preventDefault();
+
+			$('#myplans').fadeOut('slow');
+
+			$('#myplans').load(this.href);
+
+			$('#myplans').fadeIn('slow');
+			});
+			$('#myplans').load('{{ tmdmybid }}');
+			</script>
+		</div>
+
+		<div class="bid-details" style="display:none">
+			<center class="thead_bg auction-table-heading">{{ text_auction_detail }}</center>
+			<div class="table-responsive details_table table-scroll">
+				<table class="table table-bordered table-striped">
+					<thead>
+						<tr class="details_table_head">
+							{% if total_bid == 1 %}
+							<th class="text-left">{{ text_total_bid }}</th>
+							{% endif %}
+							{% if latest_bid == 1 %}
+							<th class="text-left">{{ text_current_bid }}</th>
+							{% endif %}
+							{% if manimum_quantity == 1 %}
+							<th class="text-left">{{ text_min_quantity }}</th>
+							{% endif %}
+							{% if maximum_quantitys == 1 %}
+							<th class="text-left">{{ text_max_quantity }}</th>
+							{% endif %}
+							{% if bid_start_date == 1 %}
+							<th class="text-left">{{ text_start_time }}</th>
+							{% endif %}
+							{% if bid_stop_date == 1 %}
+							<th class="text-left">{{ text_stop_time }}</th>
+							{% endif %}
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="details_table_head" style="font-size:14px;">
+							{% if total_bid == 1 %}
+							<td class="text-left replacetotal">{{ total }}</td>
+							{% endif %}
+							{% if latest_bid == 1 %}
+							<td class="text-left replacebid">{{ max_bid }}</td>
+							{% endif %}
+							{% if manimum_quantity == 1 %}
+							<td class="text-left">{{ minimum_quantity }}</td>
+							{% endif %}
+							{% if maximum_quantitys == 1 %}
+							<td class="text-left">{{ maximum_quantity }}</td>
+							{% endif %}
+							{% if bid_start_date == 1 %}
+							<td class="text-left">{{ start_time }}</td>
+							{% endif %}
+							{% if bid_stop_date == 1 %}
+							<td class="text-left">{{ endtime }}</td>
+							{% endif %}
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+</div>
+{% endif %}
+{% endif %}
+{% endif %}
+{% endif %}
+
+<!-- Start This Below Code Is Use For Bid amount Accept Only Float Number -->
+<script type="text/javascript">
+  function onlynumber(evt){
+	var char_code=(evt.which)?evt.which:evt.keycode;
+	if(char_code>32 && (char_code<48 || char_code>57) && char_code != 46 ){
+	  return false;
+	}
+  }
+</script>
+<!-- End This Below Code Is Use For Bid amount Accept Only Float Number -->
+
+<!-- Start Update Bid Amount -->
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script type="text/javascript">
+$(document).bind('keypress', function(e) {
+	if(e.keyCode==13){
+		$('#updatebid').trigger('click');
+	}
+});
+$(document).on('click', '#updatebid',function(){
+    $.ajax({
+    url: 'index.php?route=extension/tmd/tmdbid/addBid',
+    data: $('#auction-main input[type=\'text\'], #auction-main input[type=\'hidden\']'),
+    type:'post',
+    dataType:'json',
+      beforeSend: function() {
+        $('#updatebid').button('loading');
+      },
+      complete: function() {
+        $('#updatebid').button('reset');
+      },
+      success: function(json) {
+        $('.alert, .alert-danger,.alert-dismissible, .text-danger, .alert-success').remove();
+        if (json['error_login']) {
+          $('#error_login').after('<div class="alert alert-danger alert-dismissible">' + json['error_login'] + '<button type="button" class="close" data-dismiss="alert" style="right:-10px;">&times;</button></div>');
+        }
+        if (json['error_amount']) {
+          $('#error_amount').after('<div class="alert alert-danger alert-dismissible">' + json['error_amount'] + '<button type="button" class="close" data-dismiss="alert" style="right:-10px;">&times;</button></div>');
+        }
+        if (json['bid_amount']) {
+          $('.replacebid').empty();
+          $('.replacebid').html(json['bid_amount']);
+          $('.replacetotal').empty();
+          $('.replacetotal').html(json['total']);
+        if (json['won']) {
+          swal("Congratulations!", json['won'], "success");
+          $('#auction-main').remove();
+          var url = 'index.php?route=extension/tmd/tmdmywinningbid';
+          setTimeout(function () {
+            $(location).attr('href',url);
+          }, 1000);
+
+        }else{
+          if (json['success']) {
+            $('.breadcrumb').after('<div class="alert alert-success alert-dismissible">' + json['success'] + '<button type="button" class="close" data-dismiss="alert" style="right:-10px;">&times;</button></div>');
+          $('html, body').animate({ scrollTop: 0 }, 'slow');
+          }
+        }
+
+          messageshow(json);
+        }
+      }
+  });
+});
+
+function messageshow(json){
+  html='';
+  html+='<tr class="details_table_head" style="font-size:14px;">';
+  html+='<td class="text-left">'+json['customer_name']+'</td>';
+  html+='<td class="text-center">'+json['bid_amount']+'</td>';
+  html+='<td class="text-left">'+json['date_added']+'</td>';
+  html+='<td class="text-left">{{ "Normal bid" }}</td>';
+  html+='</tr>';
+  $('.newupdate').append(html);
+}
+</script>
+<!-- Start Update Bid Amount -->
+
+<!-- Start Countdown -->
+{% if active_couter == 1 %}
+<script type="text/javascript">
+var auction_id      = '{{ auction_id }}';
+// Update the count down every 1 second
+$('.timer'+auction_id).each(function() {
+var end_time    = '{{ end_time }}';
+var time    = '{{ time }}';
+var auction_id      = '{{ auction_id }}';
+var end_time      = end_time * 1000;
+var now             = time * 1000;
+var x = setInterval(function() {
+
+now = now + 1000;
+
+var distance = end_time - now;
+
+if (distance < 0) {
+clearInterval(x);
+location.reload(true);
+$('.timer' + auction_id).html('');
+$('.timer' + auction_id).html('<b style="color:#fff;">{{ text_expired }}</b>');
+}
+// Time calculations for days, hours, minutes and seconds
+var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+// Output the result in an element with id="demo"
+
+$('.days' + auction_id).html(days + "<span>D</span>");
+$('.hours' + auction_id).html(hours + "<span>H</span>");
+$('.minutes' + auction_id).html(minutes + "<span>M</span>");
+$('.seconds' + auction_id).html(seconds + "<span>S</span>");
+
+}, 1000);
+});
+</script>
+{% endif %}
+<!-- End Countdown -->
+
+<!-- Start Show And Hide Button -->
+<script type="text/javascript">
+$(document).ready(function(){
+    var win_status ='{{ customer_win_status }}';
+    $("#bidding-list").click(function(){
+    $(".bidding-listmain").show();
+      $(".bid-details").hide();
+    });
+    $("#aution-details").click(function(){
+    $(".bid-details").show();
+    $(".bidding-listmain").hide();
+    });
+
+    $("#auction-main").parent().addClass('auctionpage');
+    $("#auction-main").parents('.site-wrapper').addClass('auctionpage');
+    
+    if(win_status){
+     $("#product").hide();
+    }
+});
+</script>
+<!-- Start Show And Hide Button -->

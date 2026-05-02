@@ -1,0 +1,891 @@
+{{ header }}{{ column_left }}
+<div id="content">
+	<div class="page-header">
+		<div class="container-fluid">
+			<div class="pull-right">
+			<button type="submit" form="form-account" data-toggle="tooltip" title="{{ button_stay }}" class="btn btn-primary"><i class="fa fa-save"></i> {{ button_stay }}</button>
+			<a href="{{ cancel }}" data-toggle="tooltip" title="{{ button_cancel }}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+			<h1>{{ heading_title }}</h1>
+			<ul class="breadcrumb">
+				{% for breadcrumb in breadcrumbs %}
+				<li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+	{{ getkeyform }}
+	<div class="container-fluid">
+		{% if error_warning %}
+		<div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning }}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+		{% endif %}
+		{% if success %}
+		<div class="alert alert-success"><i class="fa fa-check-circle"></i> {{ success }}
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+		</div>
+		{% endif %}
+		
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><i class="fa fa-pencil"></i> {{ text_edit }}</h3>
+			</div>
+			<div class="panel-body">
+				<form action="{{ action }}" method="post" enctype="multipart/form-data" id="form-account" class="form-horizontal">
+					<ul class="nav nav-tabs">
+						<li class="active"><a href="#tab-general" data-toggle="tab"><i class="fa fa-cog"></i> {{ tab_general }}</a></li>
+						<li><a href="#tab-laguage" data-toggle="tab"><i class="fa fa-language"></i> {{ tab_laguage }}</a></li>
+						<li><a href="#tab-color" data-toggle="tab"><i class="fa fa-magic"></i> {{ tab_color }}</a></li>
+						<li><a href="#tab-customcss" data-toggle="tab"><i class="fa fa-code"></i> {{ tab_customcss }}</a></li>
+						<li><a href="#tab-mail" data-toggle="tab"><i class="fa fa-envelope" aria-hidden="true"></i> {{ tab_mail }}</a></li>
+						<li><a href="#tab-seourl" data-toggle="tab"><i class="fa fa-envelope" aria-hidden="true"></i> {{ tab_seourl }}</a></li>
+					</ul>
+					
+					<div class="tab-content">
+						<div class="tab-pane active" id="tab-general">
+							<div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_status }}</label>
+								<div class="col-sm-9 btn-group" data-toggle="buttons">
+									{% if tmdauction_status %}
+									<label class="btn btn-primary active">
+									  <input type="radio" name="tmdauction_status" value="1" checked="checked"> {{ text_enabled }}
+									</label>
+									{% else %}
+									<label class="btn btn-primary">
+										<input type="radio" name="tmdauction_status" value="1"> {{ text_enabled }}
+									</label>
+									{% endif %}
+									{% if not tmdauction_status %}
+									<label class="btn btn-primary active">
+										<input type="radio" name="tmdauction_status" value="0" checked="checked"> {{ text_disabled }}
+									</label>
+									{% else %}
+									<label class="btn btn-primary">
+										<input type="radio" name="tmdauction_status" value="0"> {{ text_disabled }}
+									</label>
+									{% endif %}
+								</div>              
+							</div>
+							
+							<div class="form-group">
+							  <label class="col-sm-2 control-label">{{ entry_limit }}</label>
+							  <div class="col-sm-4">
+							   <input type="number" name="tmdauction_limit" value="{{ tmdauction_limit }}" placeholder="{{ entry_limit }}"  class="form-control">
+							  </div>
+							  <label class="col-sm-2 control-label">{{ entry_auction_pro_limit }}</label>
+							  <div class="col-sm-4">
+							   <input type="number" name="tmdauction_auction_pro_limit" value="{{ tmdauction_auction_pro_limit }}" placeholder="{{ entry_auction_pro_limit }}"  class="form-control">
+							  </div>
+							</div>
+							
+							<div class="form-group">
+							  <label class="col-sm-2 control-label">{{ entry_order_date_limit }}</label>
+							  <div class="col-sm-10">
+							   <input type="number" name="tmdauction_order_date_limit" value="{{ tmdauction_order_date_limit }}" placeholder="{{ entry_order_date_limit }}"  class="form-control">
+							  </div>
+							</div>
+							
+							<div class="form-group">
+							  <label class="col-sm-2 control-label" for="input-tmdauction_timezone">{{ entry_timezone }}</label>
+							  <div class="col-sm-10">
+							  <select name="tmdauction_timezone" id="input-tmdauction_timezone" class="form-control">
+								{% for times in timezones %}
+								{% if times.name  ==  tmdauction_timezone %}
+								<option value="{{ times.name }}" selected="selected">{{ times.name }}</option>
+								{% else %}
+								<option value="{{ times.name }}">{{ times.name }}</option>
+								{% endif %}
+								{% endfor %}
+							  </select>
+							  </div>
+							</div>
+
+							<div class="form-group">
+							  <label class="col-sm-2 control-label">{{ entry_bannerimage }}</label>
+							  <div class="col-sm-10"><a href="" id="thumb-headerlogo" data-toggle="image" class="img-thumbnail"><img src="{{ thumbheaderlogo }}" alt="" title="" data-placeholder="{{ placeholderheaderlogo }}" /></a>
+							  <input type="hidden" name="tmdauction_banner" value="{{ tmdauction_banner }}" id="input-headerlogo" />
+							  </div>
+							</div>
+							
+							<div class="form-group">
+							  <label class="col-sm-2 control-label">{{ entry_height_width }}</label>
+							  <div class="col-sm-5">
+							 <input type="number" name="tmdauction_height" value="{{ tmdauction_height }}" placeholder="{{ entry_height }}" class="form-control">
+							  </div>
+							  <div class="col-sm-5">
+							 <input type="number" name="tmdauction_width" value="{{ tmdauction_width }}" placeholder="{{ entry_width }}" class="form-control">
+							 </div>
+							</div>
+							
+							<legend>{{ text_maincountdown }}</legend>
+							<div class="form-group">
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_bidder_name }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_bidder_name == 1 %} {{ "checked" }} {% endif %} value="1" name="tmdauction_bidder_name">
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_bidding_amount }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_bidding_amount == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_bidding_amount" >
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_date_added }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_date_added == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_date_added" >
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							</div>
+							
+							<div class="form-group">
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_bid_type }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_bid_type == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_bid_type" >
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_total_bid }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_total_bid == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_total_bid" >
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_latest_bid }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_latest_bid == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_latest_bid" >
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							</div>
+							
+							<div class="form-group">
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_manimum_quantity }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_manimum_quantity == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_manimum_quantity" >
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_maximum_quantity }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_maximum_quantity == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_maximum_quantity" >
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_bid_start_date }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_bid_start_date == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_bid_start_date">
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							</div>
+							
+							<div class="form-group">
+							  <div class="col-sm-4">
+								<label class="col-sm-6 control-label">{{ entry_bid_stop_date }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_bid_stop_date == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_bid_stop_date">
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							  <div class="col-sm-4 hidden">
+								<label class="col-sm-6 control-label">{{ entry_maxbid }}</label>
+								<div class="col-sm-6">
+								  <label class="switch">
+									  <input type="checkbox" class="countcolumntrue" {% if tmdauction_maxbid == 1 %} {{ "checked" }} {% endif %}  value="1" name="tmdauction_maxbid" >>
+									  <span class="slider round"></span>
+									  <span class="absolute-no">{{ text_off }}</span>
+								  </label>
+								</div>
+							  </div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input-path">{{ entry_cron }}</label>
+								<div class="col-sm-9">
+									<input value="{{ cronurl }}" placeholder="Share Link" rows="3" class="form-control" id="cron_url"/></br>
+									<div class="alert alert-info"> {{ text_copy }} </div>
+								</div>
+								<div class="col-sm-1 right_block">
+								  <span class="copyname"><button onclick="myFunction()" class="btn btn-primary copycronurl" type="button"  data-toggle="tooltip" data-original-title="Copy" style="background: #FFF;    color: #000;    border-color: #666;"><i class="fa fa-copy"></i></button></span> 
+								</div>
+							</div>
+							
+						</div>
+						
+						<div class="tab-pane" id="tab-mail">
+							<div class="form-group">
+							  <label class="col-sm-2 control-label">{{ entry_mail_status }}</label>
+								<div class="col-sm-9 btn-group" data-toggle="buttons">
+								  {% if tmdauction_mail_status %}
+								  <label class="btn btn-primary active">
+									<input type="radio" name="tmdauction_mail_status" value="1" checked="checked"> {{ text_enabled }}
+								  </label>
+								  {% else %}
+								  <label class="btn btn-primary">
+									<input type="radio" name="tmdauction_mail_status" value="1"> {{ text_enabled }}
+								  </label>
+								  {% endif %}
+								  {% if not tmdauction_mail_status %}
+								  <label class="btn btn-primary active">
+									<input type="radio" name="tmdauction_mail_status" value="0" checked="checked"> {{ text_disabled }}
+								  </label>
+								  {% else %}
+								  <label class="btn btn-primary">
+									<input type="radio" name="tmdauction_mail_status" value="0"> {{ text_disabled }}
+								  </label>
+								  {% endif %}
+								</div>              
+							</div>
+							
+							<div class="pull-right">
+							  <a class="btn btn-primary" title="{{ button_shortcut }}" data-toggle="modal" data-target="#myModal">{{ button_shortcut }}</a>
+							</div>
+							
+							<ul class="nav nav-tabs" id="languagemain">
+								{% for language in languages %}
+								<li><a href="#languagemain{{ language.language_id }}" data-toggle="tab"> <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+							   {% endfor %}
+							</ul>
+							<div class="tab-content">
+								{% for language in languages %}
+								<div class="tab-pane active" id="languagemain{{ language.language_id }}">
+									<div class="form-group">
+									  <label class="col-sm-2 control-label">{{ entry_subject }}</label>
+									  <div class="col-sm-10">
+										<input type="text" name="tmdauction_mail_langauge[{{ language.language_id }}][subject]" value="{{ tmdauction_mail_langauge[language.language_id] ? tmdauction_mail_langauge[language.language_id].subject }}" placeholder="{{ entry_subject }}"  class="form-control">
+									  </div>
+									</div>
+									<div class="form-group">
+									  <label class="col-sm-2 control-label">{{ entry_message }}</label>
+									  <div class="col-sm-10">
+										<textarea name="tmdauction_mail_langauge[{{ language.language_id }}][message]" data-toggle="summernote" data-lang="{{ summernote }}" class="form-control summernote">{{ tmdauction_mail_langauge[language.language_id] ? tmdauction_mail_langauge[language.language_id].message }}</textarea>
+									  </div>
+									</div>
+								</div>
+								{% endfor %}
+							</div>
+						</div>
+						
+						<div class="tab-pane" id="tab-laguage">
+							<ul class="nav nav-tabs active" id="language">
+								{% for language in languages %}
+								<li><a href="#language{{ language.language_id }}" data-toggle="tab"> <img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /> {{ language.name }}</a></li>
+								{% endfor %}
+							</ul>
+							
+							<div class="tab-content">
+							{% for language in languages %}
+							<div class="tab-pane active" id="language{{ language.language_id }}">
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_mainheading }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language.language_id }}][mainheading]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].mainheading }}" placeholder="{{ entry_mainheading }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_titleinpropage }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language.language_id }}][titleinpropage]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].titleinpropage }}" placeholder="{{ entry_titleinpropage }}"  class="form-control">
+								</div>
+							  </div>
+				<!-- new code 19 march 2020 -->
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_inputplace }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language.language_id }}][inputplace]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].inputplace }}" placeholder="{{ entry_inputplace }}"  class="form-control">
+								</div>
+							  </div>
+							  <!-- new code 19 march 2020 -->
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_biddinglist }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language.language_id }}][biddinglist]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].biddinglist }}" placeholder="{{ entry_biddinglist }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_biddername }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language.language_id }}][biddername]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].biddername }}" placeholder="{{ entry_biddername }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_biddingamount }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][biddingamount]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].biddingamount }}" placeholder="{{ entry_biddingamount }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_dateadded }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][dateadded]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].dateadded }}" placeholder="{{ entry_dateadded }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_bidtype }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][bidtype]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].bidtype }}" placeholder="{{ entry_bidtype }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_auctiondetail }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][auctiondetail]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].auctiondetail }}" placeholder="{{ entry_auctiondetail }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_totalbid }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][totalbid]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].totalbid }}" placeholder="{{ entry_totalbid }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_currentbid }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][currentbid]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].currentbid }}" placeholder="{{ entry_currentbid }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_minquantity }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][minquantity]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].minquantity }}" placeholder="{{ entry_minquantity }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_maxquantity }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][maxquantity]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].maxquantity }}" placeholder="{{ entry_maxquantity }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_starttime }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][starttime]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].starttime }}" placeholder="{{ entry_starttime }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_stoptime }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][stoptime]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].stoptime }}" placeholder="{{ entry_stoptime }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_bidbutton }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][bidbutton]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].bidbutton }}" placeholder="{{ entry_bidbutton }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_mywinningprobtntext }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][mywinningprobtntext]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].mywinningprobtntext }}" placeholder="{{ entry_mywinningprobtntext }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_mybiddingprobtntext }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][mybiddingprobtntext]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].mybiddingprobtntext }}" placeholder="{{ entry_mybiddingprobtntext }}"  class="form-control">
+								</div>
+							  </div>
+
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_mywinningpageheading }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][mywinningpageheading]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].mywinningpageheading }}" placeholder="{{ entry_mywinningpageheading }}"  class="form-control">
+								</div>
+							  </div>
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_mybiddingpagehedaing }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][mybiddingpagehedaing]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].mybiddingpagehedaing }}" placeholder="{{ entry_mybiddingpagehedaing }}"  class="form-control">
+								</div>
+							  </div>
+							  <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_mywinningbidhedaing }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][mywinningbidhedaing]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].mywinningbidhedaing }}" placeholder="{{ entry_mywinningbidhedaing }}"  class="form-control">
+								</div>
+							  </div>
+								<div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_mybidhedaing }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][mybidhedaing]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].mybidhedaing }}" placeholder="{{ entry_mybidhedaing }}"  class="form-control">
+								</div>
+							  </div>
+							 <div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_winningtext }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][winningtext]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].winningtext }}" placeholder="{{ entry_winningtext }}"  class="form-control">
+								</div>
+							  </div>
+
+							<div class="form-group">
+								<label class="col-sm-2 control-label">{{ entry_normalbildlisttext }}</label>
+								<div class="col-sm-10">
+								 <input type="text" name="tmdauction_langauge[{{ language['language_id'] }}][normalbildlisttext]" value="{{ tmdauction_langauge[language.language_id] ? tmdauction_langauge[language.language_id].normalbildlisttext }}" placeholder="{{ entry_normalbildlisttext }}"  class="form-control">
+								</div>
+							  </div>
+						   </div>
+						  {% endfor %}
+						  </div>
+						  </div>
+						
+						<div class="tab-pane" id="tab-color">
+							<legend>{{ text_colorsetting }}</legend>
+							<div class="form-group">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-winingtextcolor">{{ entry_winingtextcolor }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_winingtextcolor" value="{{ tmdauction_winingtextcolor }}" class="form-control color-picker" placeholder="{{ entry_winingtextcolor }}">
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+										<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-clockcolor">{{ entry_clockcolor }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_clockcolor" value="{{ tmdauction_clockcolor }}" class="form-control color-picker" placeholder="{{ entry_clockcolor }}">
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="input-timerbg">{{ entry_timerbg }}</label>
+								<div class="col-sm-3">
+									<input type="text" name="tmdauction_timerbg" value="{{ tmdauction_timerbg }}" class="form-control color-picker" placeholder="{{ entry_timerbg }}">
+								</div>
+								<label class="col-sm-3 control-label" for="input-timercolor">{{ entry_timercolor }}</label>
+								<div class="col-sm-3">
+								<input type="text" name="tmdauction_timercolor" value="{{ tmdauction_timercolor }}" class="form-control color-picker" placeholder="{{ entry_timercolor }}">
+								</div>
+							</div>
+							<hr>
+							
+							<legend>{{ text_productpagecolor }}</legend>
+							
+							<div class="form-group">
+								<label class="col-sm-3 control-label" for="input-mainheadingclr">{{ entry_mainheadingclr }}</label>
+								<div class="col-sm-9">
+									<input type="text" name="tmdauction_mainheadingclr" value="{{ tmdauction_mainheadingclr }}" class="form-control color-picker" placeholder="{{ entry_mainheadingclr }}">
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-bidlistbtncolor">{{ entry_bidlistbtncolor }}</label>
+										<div class="col-sm-6">
+										 <input type="text" name="tmdauction_bidlistbtncolor" value="{{ tmdauction_bidlistbtncolor }}" class="form-control color-picker" placeholder="{{ entry_bidlistbtncolor }}">
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-bidlistbtncolortext">{{ entry_bidlistbtncolortext }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_bidlistbtncolortext" value="{{ tmdauction_bidlistbtncolortext }}" class="form-control color-picker" placeholder="{{ entry_bidlistbtncolortext }}">
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-auctiondetailbtncolor">{{ entry_auctiondetailbtncolor }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_auctiondetailbtncolor" value="{{ tmdauction_auctiondetailbtncolor }}" class="form-control color-picker" placeholder="{{ entry_auctiondetailbtncolor }}">
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-auctiondetailbtncolortext">{{ entry_auctiondetailbtncolortext }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_auctiondetailbtncolortext" value="{{ tmdauction_auctiondetailbtncolortext }}" class="form-control color-picker" placeholder="{{ entry_auctiondetailbtncolortext }}">
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-bidbtnbgcolor">{{ entry_bidbtnbgcolor }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_bidbtnbgcolor" value="{{ tmdauction_bidbtnbgcolor }}" class="form-control color-picker" placeholder="{{ entry_bidbtnbgcolor }}">
+										</div>
+									</div>
+								</div>
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-bidbtntextcolor">{{ entry_bidbtntextcolor }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_bidbtntextcolor" value="{{ tmdauction_bidbtntextcolor }}" class="form-control color-picker" placeholder="{{ entry_bidbtntextcolor }}">
+										</div>
+									</div>
+								</div>
+							</div>
+							 
+							
+
+							<hr>
+							<legend>{{ text_auctionpagecolor }}</legend>
+							<div class="form-group">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-mywinningprobtncolor">{{ entry_mywinningprobtncolor }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_mywinningprobtncolor" class="form-control color-picker" value="{{ tmdauction_mywinningprobtncolor }}" placeholder="{{ entry_mywinningprobtncolor }}" >
+										</div>
+									</div>
+								</div>
+								
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-mywinningprobtncolortext">{{ entry_mywinningprobtncolortext }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_mywinningprobtncolortext" class="form-control color-picker" value="{{ tmdauction_mywinningprobtncolortext }}" placeholder="{{ entry_mywinningprobtncolortext }}" >
+										</div>
+									</div>
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-border">{{ entry_mybiddingprobtncolor }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_mybiddingprobtncolor" value="{{ tmdauction_mybiddingprobtncolor }}" class="form-control color-picker" placeholder="{{ entry_mybiddingprobtncolor }}">
+										</div>
+									</div>
+								</div>
+								
+								<div class="col-sm-6">
+									<div class="form-group">
+										<label class="col-sm-6 control-label" for="input-mybiddingprobtncolortext">{{ entry_mybiddingprobtncolortext }}</label>
+										<div class="col-sm-6">
+											<input type="text" name="tmdauction_mybiddingprobtncolortext" value="{{ tmdauction_mybiddingprobtncolortext }}" class="form-control color-picker" placeholder="{{ entry_mybiddingprobtncolortext }}">
+										</div>
+									</div>
+								</div>
+							</div>
+						  
+						</div>
+						
+						<div class="tab-pane" id="tab-customcss">
+							<div class="form-group">
+								<label class="col-sm-2 control-label" for="input-custom-css">{{ tab_customcss }}</label>
+								<div class="col-sm-10">
+									<textarea rows="15" name="tmdauction_custom_css" class="form-control">{{ tmdauction_custom_css }}</textarea>
+								</div>
+							</div>
+						</div>
+
+						<div class="tab-pane" id="tab-seourl">
+
+							<div class="table-responsive">
+							  <table class="table table-bordered table-hover">
+								<thead>
+								  <tr>
+								  <td class="text-left">{{ entry_store }}</td>
+								  <td class="text-left">{{ entry_auctionkeyword }}</td>
+								  </tr>
+								</thead>
+								<tbody>
+								{% for store in stores %}
+								<tr>
+								  <td class="text-left">{{ store.name }}</td>
+								  <td class="text-left">{% for language in languages %}
+								  <div class="input-group"><span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}" /></span>
+									<input type="text" name="tmdauction_auctionpageseourl[{{ store.store_id }}][{{ language.language_id }}]" value="{% if tmdauction_auctionpageseourl[store.store_id][language.language_id] %}{{ tmdauction_auctionpageseourl[store.store_id][language.language_id] }}{% endif %}" placeholder="{{ entry_auctionkeyword }}" class="form-control" />
+								  </div>
+								{% endfor %}</td>
+								</tr>
+								{% endfor %}
+								</tbody>
+							  </table>
+							</div>
+
+							<div class="table-responsive">
+							  <table class="table table-bordered table-hover">
+								<thead>
+								  <tr>
+									<td class="text-left">{{ entry_store }}</td>
+									<td class="text-left">{{ entry_winningbidkeyword }}</td>
+								  </tr>
+								</thead>
+								<tbody>
+								  {% for store in stores %}
+									<tr>
+									  <td class="text-left">{{ store.name }}</td>
+									  <td class="text-left">{% for language in languages %}
+										  <div class="input-group"><span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span> <input type="text" name="tmdauction_mywinningbidseourl[{{ store.store_id }}][{{ language.language_id }}]" value="{% if tmdauction_mywinningbidseourl[store.store_id][language.language_id] %}{{ tmdauction_mywinningbidseourl[store.store_id][language.language_id] }}{% endif %}" placeholder="{{ entry_winningbidkeyword }}" class="form-control"/>
+										  </div>
+									   {% endfor %}</td>
+									</tr>
+								  {% endfor %}
+								</tbody>
+
+							  </table>
+							</div>
+							<div class="table-responsive">
+							  <table class="table table-bordered table-hover">
+								<thead>
+								  <tr>
+									<td class="text-left">{{ entry_store }}</td>
+									<td class="text-left">{{ entry_mybidkeyword }}</td>
+								  </tr>
+								</thead>
+								<tbody>
+								  {% for store in stores %}
+									<tr>
+									  <td class="text-left">{{ store.name }}</td>
+									  <td class="text-left">{% for language in languages %}
+										  <div class="input-group"><span class="input-group-addon"><img src="language/{{ language.code }}/{{ language.code }}.png" title="{{ language.name }}"/></span> <input type="text" name="tmdauction_mybidseourl[{{ store.store_id }}][{{ language.language_id }}]" value="{% if tmdauction_mybidseourl[store.store_id][language.language_id] %}{{ tmdauction_mybidseourl[store.store_id][language.language_id] }}{% endif %}" placeholder="{{ entry_mybidkeyword }}" class="form-control"/>
+										  </div>
+										{% endfor %}</td>
+									</tr>
+								  {% endfor %}
+								</tbody>
+
+							  </table>
+							</div>
+						</div>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Shortcut popup code start here -->
+<div class="modal fade" id="myModal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+				<h4 class="modal-title">{{ text_shortcuts }}</h4>
+			</div>
+			<!-- Modal body -->
+			<div class="modal-body">
+				<ul class="list-unstyled">
+					<li>{customer_name}       = {{ text_customername }}</li>
+					<li>{email}               = {{ text_customeremail }}</li>
+					<li>{product_id}          = {{ text_productid }}</li>
+					<li>{product_name}        = {{ text_productname }}</li>
+					<li>{end_date}            = {{ text_purchase }}</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Shortcut popup code end here -->
+
+<script type="text/javascript">
+$('#language a:first').tab('show');
+$('#languagemain a:first').tab('show');
+//--></script>
+
+<script type="text/javascript"><!--
+$(document).ready( function() {
+	$('.color-picker').each( function() {
+    $(this).minicolors({
+		control: $(this).attr('data-control') || 'hue',
+		defaultValue: $(this).attr('data-defaultValue') || '',
+		inline: $(this).attr('data-inline') === 'true',
+		letterCase: $(this).attr('data-letterCase') || 'lowercase',
+		opacity: $(this).attr('data-opacity'),
+		position: $(this).attr('data-position') || 'bottom left',
+		change: function(hex, opacity) {
+		if( !hex ) return;
+		if( opacity ) hex += ', ' + opacity;
+		try {
+			console.log(hex);
+		} catch(e) {}
+		},
+			theme: 'bootstrap'
+		});
+	});
+});
+//--></script>
+
+<script type="text/javascript">
+function myFunction() {
+	var copyText = document.getElementById("cron_url");
+	copyText.select();
+	copyText.setSelectionRange(0, 99999);
+	document.execCommand("copy");
+}
+</script>
+
+<style type="text/css">
+.minicolors-theme-bootstrap .minicolors-input {
+	width:100%;	
+	height: 34px;
+}
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 95px;
+	height: 30px;
+}
+
+.switch input {display:none;}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	overflow: hidden;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #f2f2f2;
+	-webkit-transition: .4s;
+	transition: .4s;
+}
+
+.slider:before {
+	position: absolute;
+	z-index: 2;
+	content: "";
+	height: 22px;
+	width: 22px;
+	left: 4px;
+	bottom: 4px;
+	background-color: #229ac8;
+	-webkit-box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.22);
+	-webkit-transition: .4s;
+	transition: all 0.4s ease-in-out;
+}
+.slider:after {
+	position: absolute;
+	left: 0;
+	z-index: 1;
+	content: "ON";
+	font-size: 14px;
+	text-align: left !important;
+	line-height: 30px;
+	padding-left: 0;
+	width: 95px;
+	color: #fff;
+	height: 30px;
+	border-radius: 100px;
+	background-color: #229ac8;
+	-webkit-transform: translateX(-160px);
+	-ms-transform: translateX(-160px);
+	transform: translateX(-160px);
+	transition: all 0.4s ease-in-out;
+}
+
+input:checked + .slider:after {
+	-webkit-transform: translateX(0px);
+	-ms-transform: translateX(0px);
+	transform: translateX(0px);
+	/*width: 235px;*/
+	padding-left: 15px;
+}
+
+input:checked + .slider:before {
+	background-color: #fff;
+}
+
+input:checked + .slider:before {
+	-webkit-transform: translateX(63px);
+	-ms-transform: translateX(63px);
+	transform: translateX(63px);
+}
+
+/* Rounded sliders */
+.slider.round {
+	border-radius: 100px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+.absolute-no {
+	position: absolute;
+	left: 0;
+	color: #229ac8;
+	text-align: right !important;
+	font-size: 14px;
+	width: calc(100% - 15px);
+	height: 30px;
+	line-height: 30px;
+	cursor: pointer;
+} 
+
+#form-account .nav-tabs li a{
+	background: #f5f5f5;
+	border-color: #f5f5f5;
+}
+#form-account .nav-tabs li.active a {
+	background: #1C95DE;
+	border-color: #1C95DE;
+	color: #fff;
+}
+</style>
+
+{{ footer }}
