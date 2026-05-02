@@ -3,7 +3,7 @@
 	<name>Kotlyars Catalog Foundation</name>
 	<code>kotlyars_catalog_foundation</code>
 	<version>1.0.0</version>
-	<author>OpenAI Codex</author>
+	<author>Custom development</author>
 	<link>https://kotlyars.com</link>
 
 	<file path="admin/controller/catalog/product.php">
